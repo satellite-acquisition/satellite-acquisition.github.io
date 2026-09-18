@@ -34,9 +34,7 @@ strong { font-weight: 600; color: var(--ink); }
 .skip-link { position: fixed; top: 12px; left: 12px; z-index: 100; padding: 10px 16px; background: var(--ink); color: #fff; transform: translateY(-150%); }
 .skip-link:focus { transform: translateY(0); }
 
-.hero { padding: 24px 24px 26px; text-align: center; }
-.project-name { margin: 0 auto 12px; }
-.project-name img { width: 260px; height: 82px; margin-inline: auto; object-fit: cover; object-position: center 44%; }
+.hero { padding: 56px 24px 30px; text-align: center; }
 h1 { max-width: 1140px; margin: 0 auto 24px; color: var(--ink); font-size: 44px; font-weight: 600; line-height: 1.15; letter-spacing: -1.5px; }
 .authors { max-width: 1080px; margin-inline: auto; font-size: 19px; line-height: 1.65; }
 .authors span { display: inline-block; }
@@ -54,13 +52,9 @@ h1 { max-width: 1140px; margin: 0 auto 24px; color: var(--ink); font-size: 44px;
 
 .section { padding-block: 42px; }
 .section-intro { margin-top: 20px; font-size: 16px; line-height: 1.7; }
-.abstract-section { padding-block: 36px; background: #f5f5f5; }
+.abstract-section { padding-block: 36px; }
 .abstract-section .section-intro { margin-top: 18px; }
-.method-steps { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 26px; padding: 0; margin: 29px 0 0; list-style: none; counter-reset: method; }
-.method-steps li { counter-increment: method; border-top: 1px solid #d7d7d7; padding-top: 15px; }
-.method-steps li::before { display: block; content: '0' counter(method); color: #95691e; font: 12px var(--mono); margin-bottom: 12px; }
-.method-steps p { margin-top: 8px; font-size: 14px; line-height: 1.65; }
-.belief-update { text-align: center; margin-top: 31px; padding-block: 23px; background: #fafafa; }
+.belief-update { text-align: center; margin-top: 24px; padding-block: 16px; }
 .equation-label { font-size: 13px; color: var(--muted); }
 math { margin-block: 19px; font-size: 25px; color: var(--ink); }
 .equation-note { max-width: 570px; margin-inline: auto; padding-inline: 16px; font-size: 12px; line-height: 1.6; color: var(--muted); }
@@ -69,13 +63,6 @@ math { margin-block: 19px; font-size: 25px; color: var(--ink); }
 .paper-figure img { width: 100%; }
 figcaption { margin-top: 16px; color: var(--muted); font-size: 14px; line-height: 1.6; text-align: center; }
 
-.results-section { background: #f5f5f5; }
-.result-highlights { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-top: 27px; padding-block: 24px; border-top: 1px solid #ddd; border-bottom: 1px solid #ddd; text-align: center; }
-.result-highlight + .result-highlight { border-left: 1px solid #ddd; }
-.result-value { color: var(--blue); font-size: 43px; font-weight: 600; line-height: 1.15; letter-spacing: -1.5px; font-variant-numeric: tabular-nums; }
-.result-value span { font-size: 28px; letter-spacing: -.5px; }
-.result-label { margin-top: 7px; font-size: 14px; color: var(--ink); }
-.result-comparison { margin-top: 4px; font-size: 13px; color: var(--muted); }
 .results-figure { width: min(640px, 100%); margin-inline: auto; }
 .source-note { margin-top: 20px; color: var(--muted); font-size: 12px; line-height: 1.65; }
 
@@ -90,15 +77,15 @@ figcaption { margin-top: 16px; color: var(--muted); font-size: 14px; line-height
 .validation-table tbody th { font-weight: 400; }
 .validation-table td { font-family: var(--mono); color: var(--muted); }
 .validation-table td, .validation-table th:not(:first-child) { text-align: center; }
-.validation-table .proposed-policy { background: #f3f7fa; }
-.validation-table .proposed-policy th { font-weight: 600; color: var(--blue); }
+.validation-table .proposed-policy th, .validation-table .proposed-policy td { font-weight: 600; color: var(--ink); }
+.results-table { font-variant-numeric: tabular-nums; }
 .cohort-table { text-align: center; }
 
 .software-section { padding-bottom: 34px; }
 .software-links { display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 15px 27px; margin-top: 20px; font-size: 15px; }
 .text-link { font-weight: 600; }
-.console-launch-link { display: inline-flex; align-items: center; gap: 12px; min-height: 44px; padding: 10px 18px; border: 1px solid #d7c39d; border-radius: 4px; color: #765214; text-decoration: none; background: #fffaf1; font-weight: 500; }
-.console-launch-link:hover { background: #f7edd9; color: #5d3f0e; }
+.console-launch-link { display: inline-flex; align-items: center; gap: 12px; min-height: 44px; padding: 10px 18px; border: 1px solid #555; border-radius: 3px; color: #fff; text-decoration: none; background: #363636; font-weight: 500; }
+.console-launch-link:hover { background: #202020; color: #fff; }
 .console-note { max-width: 620px; margin: 15px auto 0; font-size: 13px; line-height: 1.65; text-align: center; color: var(--muted); }
 .brahe-credit { margin-top: 22px; text-align: center; font-size: 13px; color: var(--muted); }
 .citation-section { padding-top: 26px; padding-bottom: 12px; border-top: 1px solid var(--line); }
@@ -123,8 +110,7 @@ figcaption { margin-top: 16px; color: var(--muted); font-size: 14px; line-height
 }
 @media (max-width: 600px) {
   .reading-width, .content-width { width: calc(100% - 36px); }
-  .hero { padding: 18px 18px 23px; }
-  .project-name img { width: 220px; height: 70px; }
+  .hero { padding: 32px 18px 23px; }
   h1 { font-size: 30px; margin-bottom: 20px; line-height: 1.2; letter-spacing: -.7px; }
   .authors { max-width: 370px; margin-inline: auto; font-size: 16px; }
   .affiliation { font-size: 14px; }
@@ -138,19 +124,10 @@ figcaption { margin-top: 16px; color: var(--muted); font-size: 14px; line-height
   h2 { font-size: 26px; }
   .section, .abstract-section { padding-block: 30px; }
   .section-intro { font-size: 15px; margin-top: 18px; }
-  .method-steps { grid-template-columns: 1fr; gap: 20px; }
-  .method-steps li { position: relative; padding-left: 36px; }
-  .method-steps li::before { position: absolute; top: 18px; left: 0; }
-  .method-steps p { margin-top: 5px; }
   .belief-update { margin-top: 25px; }
   .paper-figure { margin-top: 25px; }
   figcaption { font-size: 13px; }
-  .result-highlights { gap: 12px; margin-top: 23px; padding-block: 20px; }
-  .result-value { font-size: 35px; }
-  .result-value span { font-size: 23px; }
-  .result-label { font-size: 12px; line-height: 1.5; }
-  .result-comparison { font-size: 11px; }
-  .result-highlight + .result-highlight { padding-left: 12px; }
+  .results-table th:first-child { width: 34%; }
   .citation-heading h2 { font-size: 24px; }
   .citation-code { font-size: 11px; padding: 16px; }
   .citation-section { padding-bottom: 0; }

@@ -12,15 +12,25 @@ content; `styles.css` controls the layout. Kayhan validation results remain `XX`
 until measured results are available.
 
 **Launch console** opens `console/` in a separate window, with the dark theme
-and LEOPT intro animation. The browser simulation uses a sample orbit and
-supports greedy and sweep searches, manual detections, and
-belief updates. It does not run the Python search solvers or export operational
-schedules. Run the full application from the [LEOPT repository](https://github.com/satellite-acquisition/leopt).
+and LEOPT intro animation. Edit the mission, then select **Roll out**.
+The JavaScript solvers implement BS-MPC, MPC without continuation, Bayesian
+greedy, frozen-prior greedy, prior-ranked sweep, tube sweep, and sky raster.
+The demo uses circular orbits, a two-dimensional angular detection model,
+and rate- and acceleration-limited motion. Each contact has up to 32 six-second
+stages; MPC uses a four-dwell horizon and 40 retained prefixes. Plans follow
+the all-miss branch until a simulated confirmation ends the search.
+The globe and entropy plot show the along-track marginal. That belief carries
+between contacts; the cross-track prior is initialized anew for each contact.
+
+This reduced example does not reproduce the SGP4 paper experiments or export
+operational schedules. Run the full application from the
+[LEOPT repository](https://github.com/satellite-acquisition/leopt).
 
 ```bash
 node --check site.js
 node scripts/check-site.mjs
 node scripts/check-console.mjs
+node scripts/check-solvers.mjs
 ```
 
 GitHub Actions checks the site and deploys `main` to GitHub Pages. Select

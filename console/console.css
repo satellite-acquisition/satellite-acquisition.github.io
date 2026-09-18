@@ -51,6 +51,10 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, a:focus-visib
 .mission-footer { background: #0d1118 !important; }
 .mission-step > div:first-child { flex-basis: 40px !important; }
 .mission-fields { padding-top: 12px !important; }
+.mission-introduction { max-width: 620px; margin-bottom: 32px; color: #9aa4b2; font-size: 13px; line-height: 1.7; }
+.mission-footer .leopt-launch { white-space: nowrap; flex-shrink: 0; }
+.console-shell.setup-open { height: 100vh !important; height: 100dvh !important; min-height: 0 !important; overflow: hidden; }
+.setup-open .console-body, .setup-open .mission-panel { min-height: 0 !important; }
 .leopt-launch { border-color: rgba(255,255,255,.45) !important; }
 .leopt-launch:hover { color: #05070b !important; }
 @media (max-width: 850px) {

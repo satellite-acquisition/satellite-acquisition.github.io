@@ -14,6 +14,8 @@
 <script defer src="https://unpkg.com/three@0.149.0/build/three.min.js"></script>
 <script defer src="https://unpkg.com/topojson-client@3.1.0/dist/topojson-client.min.js"></script>
 <script defer src="intro.js"></script>
+<script defer src="paper-solvers.js"></script>
+<script defer src="search-demo.js"></script>
 <script defer src="console.js"></script>
 <script defer src="support.js"></script>
 </head>
@@ -21,7 +23,7 @@
 <div id="leopt-root" role="main"><p class="loading-message">Loading LEOPT… <a href="https://youtu.be/CapYyRrfLU8" target="_blank" rel="noopener noreferrer">Watch the video</a></p></div>
 <noscript>Enable JavaScript to use the acquisition console, or <a href="https://youtu.be/CapYyRrfLU8" target="_blank" rel="noopener noreferrer">watch the video</a>.</noscript>
 <template id="console-template">
-<div class="console-shell" style="height:100vh;width:100vw;display:flex;flex-direction:column;font-family:'IBM Plex Sans',system-ui,sans-serif;background:#090a0d;color:#aab0ba;font-size:12px;position:relative">
+<div class="console-shell {{ shellMode }}" style="height:100vh;width:100vw;display:flex;flex-direction:column;font-family:'IBM Plex Sans',system-ui,sans-serif;background:#090a0d;color:#aab0ba;font-size:12px;position:relative">
 
   <template data-if="{{ dashboardOpen }}">
   <!-- HEADER -->
@@ -42,7 +44,7 @@
   </header>
   </template>
 
-  <div class="simulation-note">Circular orbit · greedy or sweep search · illustrative detections.
+  <div class="simulation-note">Sample mission · circular orbit · two-dimensional search model.
     <a href="https://github.com/satellite-acquisition/leopt" target="_blank" rel="noopener noreferrer">Python solvers ↗</a>
   </div>
 
@@ -50,7 +52,7 @@
   <div class="console-body" style="flex:1;display:flex;min-height:0;position:relative">
 
     <!-- GLOBE PANE -->
-    <div class="globe-pane" style="flex:1.65;position:relative;min-width:0;background:radial-gradient(125% 125% at 50% 40%,#13161c 0%,#090a0d 72%)">
+    <div class="globe-pane" aria-hidden="{{ planOpen }}" style="visibility:{{ dashboardVisibility }};flex:1.65;position:relative;min-width:0;background:radial-gradient(125% 125% at 50% 40%,#13161c 0%,#090a0d 72%)">
       <div ref="{{ globeRef }}" style="position:absolute;inset:0"></div>
 
       <div style="position:absolute;top:16px;right:16px">
@@ -59,13 +61,13 @@
 
       <div class="globe-legend" style="position:absolute;bottom:16px;right:16px;pointer-events:none;background:rgba(13,15,19,.66);border:1px solid rgba(255,255,255,.08);border-radius:5px;padding:10px 12px;line-height:1.9;font-size:9.5px;color:#8b929c;backdrop-filter:blur(3px)">
         <div style="display:flex;align-items:center;gap:8px"><span style="width:18px;height:2px;background:#7aa6f0;display:inline-block"></span>NOMINAL ORBIT</div>
-        <div style="display:flex;align-items:center;gap:8px"><span style="width:11px;height:11px;border-radius:50%;background:radial-gradient(circle,#cfe0ff,rgba(122,166,240,.06));display:inline-block"></span>POSITION BELIEF</div>
+        <div style="display:flex;align-items:center;gap:8px"><span style="width:11px;height:11px;border-radius:50%;background:radial-gradient(circle,#cfe0ff,rgba(122,166,240,.06));display:inline-block"></span>ALONG-TRACK BELIEF</div>
         <div style="display:flex;align-items:center;gap:8px"><span style="width:11px;height:11px;border-radius:50%;border:1px solid #e0a96b;background:rgba(224,169,107,.16);display:inline-block"></span>BEAM &middot; P(DETECT)</div>
         <div style="display:flex;align-items:center;gap:8px"><span style="width:11px;height:11px;border-radius:50%;border:1px solid rgba(255,255,255,.28);display:inline-block"></span>VIS CONE &middot; {{ minElStr }}</div>
       </div>
 
       <div class="entropy-panel" style="position:absolute;bottom:16px;left:16px;pointer-events:none;background:rgba(13,15,19,.66);border:1px solid rgba(255,255,255,.08);border-radius:5px;padding:10px 12px;backdrop-filter:blur(3px)">
-        <div style="font-size:9px;color:#646b76;letter-spacing:.1em;margin-bottom:5px">BELIEF ENTROPY &middot; <span style="font-family:'IBM Plex Mono',monospace;color:#8b929c">{{ entStr }}</span> bits</div>
+        <div style="font-size:9px;color:#646b76;letter-spacing:.1em;margin-bottom:5px">ALONG-TRACK ENTROPY &middot; <span style="font-family:'IBM Plex Mono',monospace;color:#8b929c">{{ entStr }}</span> bits</div>
         <svg width="200" height="38" viewBox="0 0 200 38" style="display:block">
           <polyline points="{{ sparkPath }}" fill="none" stroke="#7aa6f0" stroke-width="1.4"></polyline>
         </svg>
@@ -73,7 +75,7 @@
     </div>
 
     <!-- RIGHT RAIL -->
-    <aside class="console-rail" style="width:434px;flex:0 0 434px;display:flex;flex-direction:column;min-height:0;background:#0d0f13;border-left:1px solid rgba(255,255,255,.07)">
+    <aside class="console-rail" aria-hidden="{{ planOpen }}" style="visibility:{{ dashboardVisibility }};width:434px;flex:0 0 434px;display:flex;flex-direction:column;min-height:0;background:#0d0f13;border-left:1px solid rgba(255,255,255,.07)">
 
       <div style="display:grid;grid-template-columns:1fr 1fr 1fr;border-bottom:1px solid rgba(255,255,255,.07)">
         <template data-each="{{ statCells }}" data-as="s">
@@ -125,7 +127,7 @@
       <div style="flex:1;display:flex;flex-direction:column;min-height:0;padding:14px 16px 8px">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
           <span style="font-size:9px;color:#646b76;letter-spacing:.14em">NETWORK PASS TIMELINE</span>
-          <span style="font-size:8.5px;color:#7b828d">MODEL P(ACQUIRE) &middot; GAP {{ maxGapStr }}</span>
+          <span style="font-size:8.5px;color:#7b828d">PEAK ELEVATION &middot; GAP {{ maxGapStr }}</span>
         </div>
         <div style="position:relative;flex:1;min-height:0;overflow-y:auto;overflow-x:hidden">
           <div style="display:flex;height:14px;padding-left:46px">
@@ -166,17 +168,17 @@
           <div style="display:flex;align-items:center;gap:14px">
             <span style="font-size:16px;font-weight:700;color:#eef0f3;letter-spacing:.16em">LEOPT</span>
             <span style="width:1px;height:15px;background:rgba(255,255,255,.16)"></span>
-            <span style="font-size:10px;color:#7b828d;letter-spacing:.3em">SAMPLE SETUP</span>
+            <span style="font-size:10px;color:#9aa4b2;letter-spacing:.3em">MISSION SETUP</span>
           </div>
           <template data-if="{{ planBack }}">
-          <button onClick="{{ onCancelPlan }}" style="padding:8px 15px;background:transparent;border:1px solid rgba(255,255,255,.14);color:#8b929c;font-family:inherit;font-size:9px;letter-spacing:.14em;cursor:pointer" class="quiet-button">&#8592; DASHBOARD</button>
+          <button onClick="{{ onCancelPlan }}" style="padding:8px 15px;background:transparent;border:1px solid rgba(255,255,255,.14);color:#8b929c;font-family:inherit;font-size:9px;letter-spacing:.14em;cursor:pointer" class="quiet-button">CANCEL CHANGES</button>
           </template>
         </div>
 
         <!-- BODY -->
         <div style="position:relative;flex:1;overflow:auto">
           <div class="mission-fields" style="max-width:880px;margin:0 auto;padding:18px 30px 60px">
-            <div style="font-size:12px;color:#646b76;line-height:1.6;margin-bottom:46px;max-width:560px">Explore a generic orbit and ground network. The preview uses a circular orbit and a simplified search model; all calculations run in your browser.</div>
+            <div class="mission-introduction">Set the orbit, ground network, and search parameters, then roll out the mission. The fictional sample is loaded below and can be edited before starting.</div>
 
             <!-- STEP 01 -->
             <div class="mission-step" style="display:flex;gap:26px;margin-bottom:42px">
@@ -248,7 +250,7 @@
               </div>
               <div style="flex:1;min-width:0">
                 <button onClick="{{ onToggleAdv }}" style="width:100%;display:flex;align-items:center;justify-content:space-between;padding:18px 0;background:transparent;border:0;color:#eef0f3;font-family:inherit;font-size:12px;letter-spacing:.18em;font-weight:600;cursor:pointer;text-align:left">
-                  <span>ADVANCED <span style="color:#5a616c;font-weight:400">&mdash; ORBIT &middot; SEARCH &middot; SIMULATION</span></span><span style="color:#8b929c;font-size:11px">{{ advCaret }}</span>
+                  <span>MISSION PARAMETERS <span style="color:#8b929c;font-weight:400">&mdash; ORBIT &middot; SEARCH &middot; SIMULATION</span></span><span style="color:#8b929c;font-size:11px">{{ advCaret }}</span>
                 </button>
                 <template data-if="{{ advOpen }}">
                   <div style="padding:4px 0 18px">
@@ -293,6 +295,7 @@
                               <button onClick="{{ s.on }}" style="{{ s.style }}">{{ s.label }}</button>
                             </template>
                           </div>
+                          <p style="color:#8b929c;font-size:11px;line-height:1.7;margin:14px 0 0">Each contact contains up to 32 six-second stages: 4 s to move, 0.5 s to settle, and 1.5 s to observe. Both MPC methods search four dwells ahead with a beam of 40 prefixes. BS-MPC also scores a feasible continuation through the contact.</p>
                         </div>
                       </div>
                     </template>
@@ -320,7 +323,7 @@
         <!-- FOOTER -->
         <div class="mission-footer" style="position:relative;flex:0 0 auto;display:flex;align-items:center;justify-content:space-between;padding:16px 30px;border-top:1px solid rgba(255,255,255,.07);background:rgba(8,10,14,.6);backdrop-filter:blur(4px)">
           <div style="font-size:10px;color:#7b828d;font-family:'IBM Plex Mono',monospace;letter-spacing:.04em">{{ planSummary }}</div>
-          <button onClick="{{ onRollout }}" class="leopt-launch" style="padding:14px 44px;background:transparent;border:1px solid rgba(255,255,255,.45);color:#eef0f3;font-family:inherit;font-size:12px;font-weight:600;letter-spacing:.28em;text-indent:.28em;cursor:pointer"><span>APPLY <span class="leopt-arrow" style="display:inline-block">&#8594;</span></span></button>
+          <button onClick="{{ onRollout }}" class="leopt-launch" style="padding:14px 44px;background:transparent;border:1px solid rgba(255,255,255,.45);color:#eef0f3;font-family:inherit;font-size:12px;font-weight:600;letter-spacing:.28em;text-indent:.28em;cursor:pointer"><span>ROLL OUT <span class="leopt-arrow" style="display:inline-block">&#8594;</span></span></button>
         </div>
       </div>
     </template>

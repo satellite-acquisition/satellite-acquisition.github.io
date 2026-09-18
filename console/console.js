@@ -1,16 +1,20 @@
 'use strict';
 
 // Browser simulation adapted from the LEOPT acquisition console (MIT).
-// Circular Keplerian geometry and a one-dimensional belief; Python solvers
-// and antenna hardware are not connected to this demonstration.
+// The browser example uses circular geometry and the paper's search policies.
+const policyLabels = {
+  bs_mpc: 'BS-MPC', bayes_mpc: 'MPC, no continuation', bayes_greedy: 'Bayesian greedy',
+  frozen_greedy: 'Frozen-prior greedy', probability_ordered: 'Prior-ranked sweep',
+  tube_uniform: 'Tube sweep', sky_raster: 'Sky raster'
+};
 
 class LeoptConsole extends React.Component {
   state = {
-    t: 0, playing: false, mode: 'rehearse', rolledOut: true, revealed: false, dragOver: false, splashVisible: true, launching: false,
+    t: 0, playing: false, mode: 'plan', rolledOut: false, revealed: false, dragOver: false, splashVisible: true, launching: false,
     truthDeg: this.props.truthDeg ?? 1.8,
-    strategy: this.props.strategy ?? 'infogreedy',
+    strategy: this.props.strategy ?? 'bs_mpc',
     treatment: this.props.beliefTreatment ?? 'heatmap',
-    stepIndex: 0, acquired: false, acqT: null, advOpen: false, advTab: 'orbit', tickN: 0
+    stepIndex: 0, acquired: false, acqT: null, advOpen: true, advTab: 'orbit', tickN: 0
   };
 
   componentDidMount() {
@@ -24,9 +28,7 @@ class LeoptConsole extends React.Component {
   }
   launch() {
     if (this.state.launching || !this.state.splashVisible) return;
-    const start = () => this.setState({ splashVisible: false, launching: false, mode: 'rehearse', playing: false }, () => {
-      this.initGlobe().catch(() => this.showGlobeFallback());
-    });
+    const start = () => this.setState({ splashVisible: false, launching: false, mode: 'plan', playing: false });
     if (this.reducedMotion || (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches)) { start(); return; }
     this.setState({ launching: true });
     this._launchTimer = setTimeout(start, 620);
@@ -43,9 +45,9 @@ class LeoptConsole extends React.Component {
   defaultConfig() {
     return {
       satName: 'LEOPT-1', opm: this.sampleOPM(), alt: 520, inc: 97.4, raan: 128, u0: 22,
-      sigma0: 0.3, beamBeta: 0.34, holdNom: 45, mount: 'standard_dish', satAnt: 'turnstile',
+      sigma0: 0.3, beamWidth: 2, holdNom: 1.5, maxRate: 1.1, maxAccel: 1, crossSigma: 0.35,
       windowH: 6, growth: this.props.growthRate ?? 1.4, minEl: this.props.minElevation ?? 8,
-      truthDeg: this.props.truthDeg ?? 1.8, strategy: this.props.strategy ?? 'infogreedy',
+      truthDeg: this.props.truthDeg ?? 1.8, strategy: this.props.strategy ?? 'bs_mpc',
       ...this.parseOrbit(this.sampleOPM()),
       stations: [
         { name: 'SVALBARD', lat: 78.23, lng: 15.41 },
@@ -82,9 +84,10 @@ class LeoptConsole extends React.Component {
     const P = this.P = {
       inc: number(c.inc, 97.4, 0, 180), raan: number(c.raan, 128, -360, 360), u0: number(c.u0, 22, -360, 360), period, we: 360 / 86164,
       Re: 6371, h: altitude, window: number(c.windowH, 6, 0.5, 24) * 3600,
-      minEl: number(c.minEl, 8, 0, 89), holdNom: number(c.holdNom, 45, 5, 600),
-      beta: number(c.beamBeta, 0.34, 0.05, 10), growth: number(c.growth, 1.4, 0, 10) / 3600,
-      dDelta: 0.05, nGrid: 241
+      minEl: number(c.minEl, 8, 0, 89), holdNom: 1.5, interval: 6, settle: 0.5,
+      beta: number(c.beamWidth, 2, 0.1, 10) / Math.sqrt(8 * Math.log(2)), growth: number(c.growth, 1.4, 0, 10) / 3600,
+      maxRate: number(c.maxRate, 1.1, 0.05, 15), maxAccel: number(c.maxAccel, 1, 0.05, 20),
+      crossSigma: number(c.crossSigma, 0.35, 0.01, 3), dDelta: 0.3, nGrid: 41
     };
     this.alt = P.h / P.Re;
     this.stations = (c.stations || []).slice(0, 24).map(s => ({
@@ -97,7 +100,8 @@ class LeoptConsole extends React.Component {
     this.deltas = new Float64Array(P.nGrid);
     for (let k = 0; k < P.nGrid; k++) { const d = -6 + k * P.dDelta; this.deltas[k] = d; this.grid[k] = Math.exp(-(d * d) / (2 * s0 * s0)); }
     this.normalize();
-    this.tLast = 0; this.log = [];
+    this.tLast = 0; this.log = []; this.activeContact = null;
+    this.search = new window.LeoptSearchDemo(this);
     this.history = [{ t: 0, ent: this.entropy(this.grid) }];
     this.buildPasses(); this.buildSchedule();
     this.maxGap = this.computeMaxGap();
@@ -142,21 +146,13 @@ class LeoptConsole extends React.Component {
     return out;
   }
   displayGrid(t) {
+    if (this.activeContact && t >= this.activeContact.start && t <= this.activeContact.end) return this.grid.slice();
     const sb = (this.P.growth * Math.max(0, t - this.tLast)) / this.P.dDelta;
     const g = this.gaussBlur(this.grid, sb);
     let s = 0; for (const v of g) s += v; if (s > 0) for (let i = 0; i < g.length; i++) g[i] /= s;
     return g;
   }
-  pdet(d, aim, g) { const x = (d - aim) / this.P.beta; return g * Math.exp(-x * x / 2); }
-  expectedDetect(aim, g, grid) { let s = 0; for (let k = 0; k < grid.length; k++) s += grid[k] * this.pdet(this.deltas[k], aim, g); return s; }
-  geomQuality(pass) { return 0.55 + 0.4 * Math.min(1, pass.maxEl / 70); }
-  planAim(slot, grid) {
-    const g = this.geomQuality(slot.pass), b = this.P.beta;
-    if (this.state.strategy === 'sweep') { let a = -4 + this.log.length * 2 * b; a = ((a + 5) % 10 + 10) % 10 - 5; return Math.round(a * 100) / 100; }
-    let best = -1, bestA = 0;
-    for (let a = -5; a <= 5; a += b) { const e = this.expectedDetect(a, g, grid); if (e > best) { best = e; bestA = a; } }
-    return Math.round(bestA * 100) / 100;
-  }
+  plannedDwell(slot) { return this.search.dwell(slot); }
 
   // passes
   buildPasses() {
@@ -178,10 +174,18 @@ class LeoptConsole extends React.Component {
   }
   buildSchedule() {
     const P = this.P, slots = [];
-    for (const p of this.allPasses) {
-      const dur = p.tLOS - p.tAOS, n = Math.max(1, Math.min(3, Math.floor(dur / P.holdNom)));
-      p.nSlots = n;
-      for (let i = 0; i < n; i++) { const frac = (i + 1) / (n + 1); slots.push({ station: p.station, pass: p, t: p.tAOS + frac * dur, hold: P.holdNom }); }
+    let available = 0;
+    for (const p of [...this.allPasses].sort((a, b) => a.tAOS - b.tAOS)) {
+      const duration = Math.min(192, p.tLOS - p.tAOS);
+      p.start = Math.max(p.tAOS, Math.min(p.tmax - duration / 2, p.tLOS - duration));
+      p.nSlots = 0; p.slots = [];
+      if (p.start < available) continue;
+      const n = Math.floor(duration / P.interval);
+      p.end = p.start + n * P.interval; available = p.end; p.nSlots = n;
+      for (let i = 0; i < n; i++) {
+        const slot = { station: p.station, pass: p, stage: i, t: p.start + (i + 1) * P.interval, hold: P.holdNom };
+        p.slots.push(slot); slots.push(slot);
+      }
     }
     slots.sort((a, b) => a.t - b.t); this.schedule = slots;
   }
@@ -193,9 +197,8 @@ class LeoptConsole extends React.Component {
   }
   computeGanttColors() {
     for (const p of this.allPasses) {
-      const g = this.geomQuality(p), grid = this.displayGrid(Math.min(p.tmax, this.P.window));
-      let best = 0; for (let a = -5; a <= 5; a += this.P.beta) { const e = this.expectedDetect(a, g, grid); if (e > best) best = e; }
-      p.__pAcq = 1 - Math.pow(1 - best, p.nSlots || 1); p.__bg = this.pFill(p.__pAcq); p.__border = this.pStroke(p.__pAcq, 0.55);
+      const elevation = p.maxEl / 90;
+      p.__bg = this.pFill(elevation); p.__border = this.pStroke(elevation, 0.55);
     }
   }
 
@@ -386,8 +389,8 @@ class LeoptConsole extends React.Component {
     if (!full) return;
     const slot = this.schedule[this.state.stepIndex];
     if (slot && !this.state.acquired) {
-      const aim = this.planAim(slot, this.displayGrid(slot.t)), g = this.geomQuality(slot.pass), pd = this.expectedDetect(aim, g, this.displayGrid(slot.t));
-      const spA = this.subpoint(this.uNow(slot.t) + aim, slot.t), col = this.hex(this.pStroke(pd));
+      const dwell = this.plannedDwell(slot), pd = dwell.probability;
+      const spA = dwell.sky, col = this.hex(this.pStroke(pd));
       this.placeDisc(this.gl.beam, spA.lat, spA.lng, 1.6, R * 1.006); this.gl.beam.material.color.setHex(col); this.gl.beam.material.opacity = 0.16 + 0.46 * pd; this.gl.beam.visible = true;
       this.setLine(this.gl.beamRing, this.circlePts(spA.lat, spA.lng, 1.6, R * 1.007)); this.gl.beamRing.material.color.setHex(col); this.gl.beamRing.visible = true;
       const a = this.ll2v(slot.station.lat, slot.station.lng, R * 1.004), b = this.ll2v(spA.lat, spA.lng, R * (1 + this.alt));
@@ -415,19 +418,27 @@ class LeoptConsole extends React.Component {
   scrub(e) { const v = +e.target.value; clearInterval(this._timer); this.setState({ t: v, playing: false }, () => this.updateGlobe(true)); }
   setTruth(e) { this.setState({ truthDeg: +e.target.value }, () => this.updateGlobe(true)); }
   toggleReveal() { this.setState({ revealed: !this.state.revealed }, () => this.updateGlobe(false)); }
-  setStrategy(s) { this.setState({ strategy: s }, () => { this.computeGanttColors(); this.updateGlobe(true); }); }
+  setStrategy(s) {
+    if (!window.LeoptSolvers.policies.includes(s)) return;
+    this.config.strategy = s; this.form.strategy = s;
+    this.setState({ strategy: s }, () => this.reset());
+  }
   strategyBadge(st) {
-    return st.strategy === 'sweep'
-      ? { strategyLabel: 'SWEEP', strategyColor: '#e0a96b' }
-      : { strategyLabel: 'GREEDY', strategyColor: '#7aa6f0' };
+    return { strategyLabel: policyLabels[st.strategy] || st.strategy, strategyColor: st.strategy === 'bs_mpc' ? '#7aa6f0' : '#e0a96b' };
   }
   setTreatment(tr) { this.setState({ treatment: tr }, () => this.updateGlobe(true)); }
   setMode(m) {
+    if (m === 'rehearse' && !this.state.rolledOut) return;
     if (m === 'plan') {
       clearInterval(this._timer); clearInterval(this._auto); this._auto = null;
       this.form = JSON.parse(JSON.stringify(this.config || this.defaultConfig()));
     }
     this.setState({ mode: m, playing: false });
+  }
+  cancelPlan() {
+    if (!this.state.rolledOut) return;
+    this.form = JSON.parse(JSON.stringify(this.config));
+    this.setMode('rehearse');
   }
   async _loadOrbitFile(file) {
     if (!file) return;
@@ -545,9 +556,19 @@ class LeoptConsole extends React.Component {
     clearInterval(this._timer); clearInterval(this._auto); this._auto = null;
     this.setState({
       mode: 'rehearse', t: 0, stepIndex: 0, acquired: false, acqT: null, revealed: false, playing: false,
-      strategy: this.config.strategy || 'infogreedy', truthDeg: Math.max(-4, Math.min(4, +this.config.truthDeg || 0)), rolledOut: true,
+      strategy: this.config.strategy || 'bs_mpc', truthDeg: Math.max(-4, Math.min(4, +this.config.truthDeg || 0)), rolledOut: true,
       tickN: this.state.tickN + 1
-    }, () => { this.setup(); this.rebuildStations(); this.focusOnOrbit(0); this.updateGlobe(true); this.forceUpdate(); });
+    }, () => {
+      this.setup();
+      if (this._globeReady) {
+        this.rebuildStations(); this.focusOnOrbit(0); this.updateGlobe(true);
+      } else if (!this._globeInitPromise) {
+        this._globeInitPromise = this.initGlobe()
+          .catch(() => this.showGlobeFallback())
+          .finally(() => { this._globeInitPromise = null; });
+      }
+      this.forceUpdate();
+    });
   }
 
   reset() {
@@ -579,19 +600,17 @@ class LeoptConsole extends React.Component {
       { label: 'DWELLS EXEC', value: String(this.log.length), color: '#dadee4' },
       { label: 'NON-DETECT', value: String(nonDet), color: nonDet > 0 ? '#d8959c' : '#dadee4' },
       { label: '1\u03c3 ALONG-TRK', value: sigma.toFixed(2) + '\u00b0', color: '#e0a96b' },
-      { label: 'ENTROPY', value: entShown.toFixed(2), color: '#dadee4' },
+      { label: 'ALONG-TRACK ENTROPY', value: entShown.toFixed(2), color: '#dadee4' },
       { label: 'MAX GAP', value: this.mmss(this.maxGap), color: this.maxGap > 1800 ? '#d8959c' : '#dadee4' }
     ];
 
     const slot = this.schedule ? this.schedule[st.stepIndex] : null;
     let cd = {}; const showDwell = !st.acquired && !!slot;
-    if (slot) {
-      const aim = this.planAim(slot, this.displayGrid(slot.t)), g = this.geomQuality(slot.pass);
-      const spA = this.subpoint(this.uNow(slot.t) + aim, slot.t);
-      const cc = this.centralAngle(slot.station.lat, slot.station.lng, spA.lat, spA.lng);
-      const el = Math.max(0, this.elevation(cc)), az = this.azimuth(slot.station.lat, slot.station.lng, spA.lat, spA.lng);
-      const pd = this.expectedDetect(aim, g, this.displayGrid(slot.t));
-      cd = { cdStation: slot.station.name, cdTime: this.hms(slot.t), cdAz: az.toFixed(0), cdEl: el.toFixed(0), cdHold: slot.hold, cdAim: (aim >= 0 ? '+' : '') + aim.toFixed(2) + '\u00b0', cdPdet: (pd * 100).toFixed(0) + '%', cdPdetW: Math.round(pd * 100), cdPdetColor: this.pStroke(pd, 0.85) };
+    if (showDwell && st.rolledOut && st.mode === 'rehearse') {
+      const dwell = this.plannedDwell(slot), pd = dwell.probability;
+      cd = { cdStation: slot.station.name, cdTime: this.hms(slot.t), cdAz: dwell.sky.az.toFixed(0), cdEl: dwell.sky.el.toFixed(0), cdHold: slot.hold,
+        cdAim: dwell.aim.map(value => (value >= 0 ? '+' : '') + value.toFixed(1) + '\u00b0').join(', '),
+        cdPdet: (pd * 100).toFixed(0) + '%', cdPdetW: Math.round(pd * 100), cdPdetColor: this.pStroke(pd, 0.85) };
     }
 
     const rows = (this.stations || []).map(s => ({
@@ -612,7 +631,7 @@ class LeoptConsole extends React.Component {
     const f = this.form || {};
     const fld = (key, label, unit) => ({ label, unit: unit || '', value: String(f[key] ?? ''), on: e => this.setField(key, e.target.value) });
     const orbitFields = [fld('satName', 'DESIGNATOR'), fld('alt', 'ALTITUDE', 'km'), fld('inc', 'INCLINATION', '\u00b0'), fld('raan', 'RAAN', '\u00b0'), fld('u0', 'ARG-LAT @ SEP', '\u00b0'), fld('sigma0', 'INIT 1\u03c3', '\u00b0')];
-    const groundFields = [fld('beamBeta', 'BEAM WIDTH', '\u00b0'), fld('holdNom', 'DWELL HOLD', 's')];
+    const groundFields = [fld('beamWidth', 'BEAM FWHM', '\u00b0'), fld('crossSigma', 'CROSS-TRACK 1\u03c3', '\u00b0'), fld('maxRate', 'MAX SLEW RATE', '\u00b0/s'), fld('maxAccel', 'MAX ACCELERATION', '\u00b0/s\u00b2')];
     const simFields = [fld('windowH', 'LEOP WINDOW', 'h'), fld('growth', '\u03c3 GROWTH', '\u00b0/h'), fld('minEl', 'MIN ELEVATION', '\u00b0'), fld('truthDeg', 'HYPOTH. TRUTH', '\u00b0')];
     const advTab = st.advTab || 'orbit';
     const advTabs = [['orbit', 'ORBIT'], ['antenna', 'SEARCH'], ['simulation', 'SIMULATION']]
@@ -634,18 +653,19 @@ class LeoptConsole extends React.Component {
       name: String(s.name ?? ''), lat: String(s.lat ?? ''), lng: String(s.lng ?? ''),
       onName: e => this.setStationField(i, 'name', e.target.value), onLat: e => this.setStationField(i, 'lat', e.target.value), onLng: e => this.setStationField(i, 'lng', e.target.value), onRemove: () => this.removeStation(i)
     }));
-    const planStrategies = [
-      { label: 'GREEDY', on: () => this.setField('strategy', 'infogreedy'), style: this.segStyle(f.strategy === 'infogreedy') },
-      { label: 'SWEEP', on: () => this.setField('strategy', 'sweep'), style: this.segStyle(f.strategy === 'sweep') }
-    ];
+    const planStrategies = window.LeoptSolvers.policies.map(policy => ({
+      label: policyLabels[policy], on: () => this.setField('strategy', policy), style: this.segStyle(f.strategy === policy)
+    }));
     const presets = [
       { label: 'POLAR DEFAULT', on: () => this.applyPreset('default') },
       { label: 'SOUTHERN', on: () => this.applyPreset('south') },
       { label: 'MINIMAL', on: () => this.applyPreset('min') }
     ];
-    const planSummary = `${(f.stations || []).length} STATIONS \u00b7 ${f.windowH || '?'}h WINDOW \u00b7 ${f.alt || '?'} km \u00b7 ${f.strategy === 'sweep' ? 'SWEEP' : 'GREEDY'}`;
+    const planSummary = `${(f.stations || []).length} STATIONS \u00b7 ${f.windowH || '?'}h WINDOW \u00b7 ${this.strategyBadge({ strategy: f.strategy }).strategyLabel}`;
     return {
       dashboardOpen: !st.splashVisible, splashOpen: st.splashVisible,
+      dashboardVisibility: st.mode === 'plan' ? 'hidden' : 'visible',
+      shellMode: st.mode === 'plan' ? 'setup-open' : 'console-open',
       splashOpacity: st.launching ? 0 : 1, splashScale: st.launching ? '1.04' : '1',
       splashPointer: st.launching ? 'none' : 'auto', onLaunch: () => this.launch(),
       globeRef: el => { this.globeEl = el; },
@@ -666,7 +686,7 @@ class LeoptConsole extends React.Component {
       onOpm: e => this.setOpm(e.target.value), onLoadSample: () => this.loadSampleOrbit(), onToggleAdv: () => this.toggleAdv(),
       fileInputRef: el => { this.fileInput = el; }, onBrowse: () => this.openFilePicker(), onPickFile: e => this.readPickedFile(e),
       showEdit: st.mode === 'rehearse', onEditPlan: () => this.setMode('plan'),
-      onCancelPlan: () => this.setMode('rehearse'), onRollout: () => this.rollout(), onAddStation: () => this.addStation(),
+      onCancelPlan: () => this.cancelPlan(), onRollout: () => this.rollout(), onAddStation: () => this.addStation(),
       planBack: st.rolledOut, dragOver: st.dragOver, dropBorder: st.dragOver ? 'rgba(122,166,240,.6)' : 'rgba(255,255,255,.12)',
       onDragOver: e => { e.preventDefault(); if (!this.state.dragOver) this.setState({ dragOver: true }); },
       onDragLeave: e => { e.preventDefault(); this.setState({ dragOver: false }); },
@@ -683,17 +703,17 @@ class LeoptConsole extends React.Component {
     this._auto = setInterval(() => {
       const slot = this.schedule[this.state.stepIndex];
       if (!slot || this.state.acquired) { clearInterval(this._auto); this._auto = null; this.setState({ tickN: this.state.tickN + 1 }); return; }
-      const aim = this.planAim(slot, this.displayGrid(slot.t)), g = this.geomQuality(slot.pass);
-      this.report(Math.random() < this.pdet(this.state.truthDeg, aim, g));
+      this.report(Math.random() < this.plannedDwell(slot).truthProbability);
     }, 950);
   }
   report(detect) {
     const slot = this.schedule[this.state.stepIndex]; if (!slot || this.state.acquired) return; const tt = slot.t;
     clearInterval(this._timer);
-    this.grid = this.displayGrid(tt); this.tLast = tt;
-    const aim = this.planAim(slot, this.grid), g = this.geomQuality(slot.pass);
-    for (let k = 0; k < this.P.nGrid; k++) { const pd = this.pdet(this.deltas[k], aim, g); this.grid[k] *= detect ? pd : (1 - pd); }
-    this.normalize(); this.log.push({ slot, aim, detect }); this.history.push({ t: tt, ent: this.entropy(this.grid) });
+    const dwell = this.plannedDwell(slot), prior = slot.stage ? this.grid : this.displayGrid(tt);
+    this.grid = Float64Array.from(detect ? prior.map((weight, i) => weight * dwell.probabilities[i]) : dwell.posterior);
+    if (!this.grid.some(weight => weight > 0)) this.grid = Float64Array.from(prior);
+    this.normalize(); this.tLast = tt; this.activeContact = slot.pass;
+    this.log.push({ slot, aim: dwell.aim, point: dwell.point, detect }); this.history.push({ t: tt, ent: this.entropy(this.grid) });
     let acquired = this.state.acquired, acqT = this.state.acqT;
     if (detect && !acquired) { acquired = true; acqT = tt; }
     this.computeGanttColors();

@@ -29,6 +29,7 @@ jobs:
             node --check "$file"
           done
       - run: node scripts/check-site.mjs
+      - run: node scripts/check-solvers.mjs
       - run: node scripts/check-console.mjs
 
   deploy:
