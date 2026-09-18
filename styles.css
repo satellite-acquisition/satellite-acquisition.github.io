@@ -38,22 +38,23 @@ strong { font-weight: 600; color: var(--ink); }
 .project-name { margin: 0 auto 12px; }
 .project-name img { width: 260px; height: 82px; margin-inline: auto; object-fit: cover; object-position: center 44%; }
 h1 { max-width: 1140px; margin: 0 auto 24px; color: var(--ink); font-size: 44px; font-weight: 600; line-height: 1.15; letter-spacing: -1.5px; }
-.authors { font-size: 19px; line-height: 1.5; }
+.authors { max-width: 1080px; margin-inline: auto; font-size: 19px; line-height: 1.65; }
 .authors span { display: inline-block; }
-.affiliation { font-size: 16px; margin-top: 5px; }
-.lab { color: var(--muted); font-size: 13px; margin-top: 4px; }
+.authors sup, .affiliation sup { color: var(--muted); font-size: .65em; margin-left: 2px; }
+.affiliation { display: flex; flex-wrap: wrap; justify-content: center; gap: 4px 22px; font-size: 14px; margin-top: 9px; line-height: 1.6; }
 .hero-links { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-top: 21px; }
-.hero-links a, .resource-tag { display: inline-flex; align-items: center; justify-content: center; gap: 7px; min-height: 40px; padding: 8px 18px; border-radius: 999px; color: #fff; background: #363636; font-size: 15px; line-height: 1.4; text-decoration: none; }
+.hero-links a { display: inline-flex; align-items: center; justify-content: center; gap: 7px; min-height: 40px; padding: 8px 18px; border-radius: 999px; color: #fff; background: #363636; font-size: 15px; line-height: 1.4; text-decoration: none; }
 .hero-links a:hover { background: #202020; color: #fff; }
 .hero-links svg { width: 16px; height: 16px; }
-.resource-tag[aria-disabled='true'] { background: #666; cursor: default; }
-.resource-status { margin-left: 3px; font-size: 11px; }
-
-.video-section { margin-bottom: 31px; }
-.video-frame { aspect-ratio: 16 / 9; background: #121317; }
-.video-frame iframe { display: block; width: 100%; height: 100%; border: 0; }
-.video-caption { margin-top: 12px; font-size: 13px; color: var(--muted); text-align: center; }
-.video-caption > span { margin-inline: 5px; }
+.demo-section { width: min(1160px, calc(100% - 48px)); margin: 0 auto 31px; }
+.demo-heading { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding-block: 10px; font-size: 13px; }
+.demo-heading > span { color: var(--ink); font-weight: 600; }
+.demo-label { margin-left: 10px; color: var(--muted); font-size: 11px; font-weight: 400; }
+.demo-frame { height: 650px; background: #f6f8fb; border: 1px solid #dce1e7; border-radius: 6px; overflow: hidden; }
+.demo-frame iframe { display: block; width: 100%; height: 100%; border: 0; }
+.demo-caption { max-width: 800px; margin: 14px auto 0; font-size: 13px; color: var(--muted); line-height: 1.65; text-align: center; }
+.demo-caption a { white-space: nowrap; margin-left: 5px; }
+.demo-note { margin-top: 5px; font-size: 12px; line-height: 1.65; text-align: center; color: var(--muted); }
 
 .section { padding-block: 42px; }
 .section-intro { margin-top: 20px; font-size: 16px; line-height: 1.7; }
@@ -81,6 +82,21 @@ figcaption { margin-top: 16px; color: var(--muted); font-size: 14px; line-height
 .result-comparison { margin-top: 4px; font-size: 13px; color: var(--muted); }
 .results-figure { width: min(640px, 100%); margin-inline: auto; }
 .source-note { margin-top: 20px; color: var(--muted); font-size: 12px; line-height: 1.65; }
+
+.validation-section { border-bottom: 1px solid var(--line); }
+.validation-status { margin-top: 16px; color: var(--muted); font-size: 13px; line-height: 1.6; }
+.pending-value { font-family: var(--mono); }
+.table-scroll { margin-top: 24px; overflow-x: auto; }
+.validation-table { width: 100%; border-collapse: collapse; text-align: left; font-size: 14px; line-height: 1.55; }
+.validation-table caption { text-align: left; color: var(--ink); font-weight: 600; margin-bottom: 10px; }
+.validation-table th, .validation-table td { padding: 12px 14px; border-bottom: 1px solid var(--line); }
+.validation-table thead th { color: var(--muted); font-size: 12px; font-weight: 500; border-top: 1px solid var(--line); background: #fafafa; }
+.validation-table tbody th { font-weight: 400; }
+.validation-table td { font-family: var(--mono); color: var(--muted); }
+.validation-table td, .validation-table th:not(:first-child) { text-align: center; }
+.validation-table .proposed-policy { background: #f3f7fa; }
+.validation-table .proposed-policy th { font-weight: 600; color: var(--blue); }
+.cohort-table { text-align: center; }
 
 .software-section { padding-bottom: 34px; }
 .software-links { display: flex; justify-content: center; flex-wrap: wrap; gap: 15px 27px; margin-top: 20px; font-size: 15px; }
@@ -113,12 +129,17 @@ figcaption { margin-top: 16px; color: var(--muted); font-size: 14px; line-height
   h1 { font-size: 30px; margin-bottom: 20px; line-height: 1.2; letter-spacing: -.7px; }
   .authors { max-width: 370px; margin-inline: auto; font-size: 16px; }
   .affiliation { font-size: 14px; }
-  .lab { font-size: 12px; }
   .hero-links { margin-top: 19px; gap: 7px; }
-  .hero-links a, .resource-tag { min-height: 40px; font-size: 14px; padding: 8px 13px; }
-  .resource-status { font-size: 10px; }
-  .video-caption { font-size: 12px; }
-  .video-section { margin-bottom: 26px; }
+  .hero-links a { min-height: 40px; font-size: 14px; padding: 8px 13px; }
+  .demo-section { width: calc(100% - 24px); margin-bottom: 26px; }
+  .demo-heading { font-size: 12px; }
+  .demo-label { display: block; margin: 3px 0 0; font-size: 10px; }
+  .demo-frame { height: 760px; }
+  .demo-caption { font-size: 12px; padding-inline: 6px; }
+  .demo-note { font-size: 11px; padding-inline: 6px; }
+  .validation-table { table-layout: fixed; font-size: 12px; }
+  .validation-table thead th { font-size: 11px; }
+  .validation-table th, .validation-table td { padding: 10px 8px; }
   h2 { font-size: 26px; }
   .section, .abstract-section { padding-block: 30px; }
   .section-intro { font-size: 15px; margin-top: 18px; }
@@ -142,7 +163,7 @@ figcaption { margin-top: 16px; color: var(--muted); font-size: 14px; line-height
 }
 @media (max-width: 370px) {
   h1 { font-size: 27px; }
-  .hero-links a, .resource-tag { padding-inline: 11px; }
+  .hero-links a { padding-inline: 11px; }
 }
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }

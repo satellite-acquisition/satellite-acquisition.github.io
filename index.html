@@ -4,10 +4,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#ffffff">
-  <meta name="description" content="Bayesian Search MPC for Spacecraft Acquisition Under Orbital Uncertainty. Research by Carlo Schreiber, Duncan Eddy, and Mykel J. Kochenderfer at Stanford University.">
+  <meta name="description" content="Bayesian Search MPC for Spacecraft Acquisition Under Orbital Uncertainty. Research from Stanford Intelligent Systems Laboratory and Kayhan Space, with an interactive LEOPT console demo.">
   <meta property="og:type" content="website">
   <meta property="og:title" content="LEOPT · Bayesian Search for Spacecraft Acquisition">
-  <meta property="og:description" content="Learning from missed detections to plan antenna searches under orbital uncertainty. Watch the demonstration and explore the research and open-source solvers.">
+  <meta property="og:description" content="Learning from missed detections to plan antenna searches under orbital uncertainty. Try the interactive console and explore the research and open-source solvers.">
   <meta property="og:url" content="https://satellite-acquisition.github.io/">
   <meta property="og:image" content="https://satellite-acquisition.github.io/assets/leopt-logo.png">
   <meta name="twitter:card" content="summary_large_image">
@@ -26,14 +26,9 @@
     <header class="hero">
       <p class="project-name"><img src="assets/leopt-logo.png" alt="LEOPT" width="1200" height="800"></p>
       <h1>Bayesian Search MPC for Spacecraft Acquisition<br class="desktop-break"> Under Orbital Uncertainty</h1>
-      <p class="authors"><span>Carlo Schreiber,</span> <span>Duncan Eddy,</span> <span>Mykel J. Kochenderfer</span></p>
-      <p class="affiliation">Stanford University</p>
-      <p class="lab">Stanford Intelligent Systems Laboratory</p>
+      <p class="authors"><span>Carlo Schreiber<sup>1</sup>,</span> <span>Duncan Eddy<sup>1</sup>,</span> <span>Mahdi Al-Husseini<sup>1</sup>,</span> <span>Derek Woods<sup>2</sup>,</span> <span>Araz Feyzi<sup>2</sup>,</span> <span>Mykel Kochenderfer<sup>1</sup></span></p>
+      <p class="affiliation"><span><sup>1</sup> Stanford Intelligent Systems Laboratory, Stanford University</span><span><sup>2</sup> Kayhan Space</span></p>
       <nav class="hero-links" aria-label="Research resources">
-        <span class="resource-tag" aria-disabled="true" title="The preprint is not available on arXiv yet.">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M14 3H6a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V8Z"/><path d="M14 3v5h5M8 12h8M8 16h6"/></svg>
-          <span>arXiv <span class="resource-status">forthcoming</span></span>
-        </span>
         <a href="https://github.com/satellite-acquisition/leopt" target="_blank" rel="noopener noreferrer">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m8 6-6 6 6 6m8-12 6 6-6 6m-3-14-2 16"/></svg>
           <span>Code</span>
@@ -45,17 +40,16 @@
       </nav>
     </header>
 
-    <section class="video-section content-width" aria-label="LEOPT demonstration">
-      <div class="video-frame">
-        <iframe
-          src="https://www.youtube-nocookie.com/embed/CapYyRrfLU8?rel=0"
-          title="LEOPT demonstration: satellite acquisition and antenna search"
-          width="960" height="540"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-          referrerpolicy="strict-origin-when-cross-origin"
-          allowfullscreen></iframe>
+    <section class="demo-section" id="demo" aria-label="Interactive LEOPT console">
+      <div class="demo-heading">
+        <span>Interactive console <span class="demo-label">Sample simulation</span></span>
+        <a href="console/index.html" target="_blank" rel="noopener noreferrer">Open full screen <span aria-hidden="true">↗</span></a>
       </div>
-      <p class="video-caption">LEOPT acquisition console <span aria-hidden="true">·</span> <a href="https://youtu.be/CapYyRrfLU8" target="_blank" rel="noopener noreferrer">Watch on YouTube <span aria-hidden="true">↗</span></a></p>
+      <div class="demo-frame">
+        <iframe src="console/index.html" title="Interactive LEOPT acquisition console with a sample orbit" width="1160" height="650" allowfullscreen></iframe>
+      </div>
+      <p class="demo-caption">Explore a sample orbit, compare greedy and sweep searches, and update the belief after each observation. <a href="https://youtu.be/CapYyRrfLU8" target="_blank" rel="noopener noreferrer">Watch the video <span aria-hidden="true">↗</span></a></p>
+      <p class="demo-note">The demo uses a simplified orbit and detection model. The paper’s search solvers are available in the <a href="https://github.com/satellite-acquisition/leopt" target="_blank" rel="noopener noreferrer">LEOPT repository</a>.</p>
     </section>
 
     <section class="abstract-section" id="abstract" aria-labelledby="abstract-title">
@@ -112,6 +106,35 @@
       </div>
     </section>
 
+    <section class="validation-section section" id="validation" aria-labelledby="validation-title">
+      <div class="reading-width">
+        <h2 id="validation-title">Real-world validation</h2>
+        <p class="section-intro">The planned evaluation uses Kayhan Space LEOP records to test acquisition searches with mission-derived orbit uncertainty and receiver behavior. Controllers use only information available before each contact; calibration and evaluation use separate deployments.</p>
+        <p class="validation-status">Results pending. <span class="pending-value">XX</span> marks values awaiting validation.</p>
+        <div class="table-scroll" role="region" aria-label="Kayhan evaluation cohort" tabindex="0">
+          <table class="validation-table cohort-table">
+            <caption>Kayhan Space evaluation cohort</caption>
+            <thead><tr><th scope="col">Deployments</th><th scope="col">Acquisition attempts</th><th scope="col">Ground stations</th></tr></thead>
+            <tbody><tr><td>XX</td><td>XX</td><td>XX</td></tr></tbody>
+          </table>
+        </div>
+        <div class="table-scroll" role="region" aria-label="Kayhan acquisition policy comparison" tabindex="0">
+          <table class="validation-table">
+            <caption>Acquisition on Kayhan Space data · planned replay comparison</caption>
+            <thead><tr><th scope="col">Search policy</th><th scope="col">Acquisition probability (%)</th><th scope="col">Restricted mean acquisition time (s)</th></tr></thead>
+            <tbody>
+              <tr><th scope="row">Recorded pointing</th><td>XX</td><td>XX</td></tr>
+              <tr><th scope="row">Tube sweep</th><td>XX</td><td>XX</td></tr>
+              <tr><th scope="row">Bayesian greedy</th><td>XX</td><td>XX</td></tr>
+              <tr><th scope="row">Short-horizon search</th><td>XX</td><td>XX</td></tr>
+              <tr class="proposed-policy"><th scope="row">BS-MPC</th><td>XX</td><td>XX</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="source-note">No measured Kayhan results are reported yet. Replays of unexecuted pointings will be reported as model estimates, separately from observed acquisition outcomes.</p>
+      </div>
+    </section>
+
     <section class="software-section section reading-width" id="software" aria-labelledby="software-title">
       <h2 id="software-title">Explore LEOPT</h2>
       <p class="section-intro">The MIT-licensed Python library includes Bayesian search, continuation rollout, POMCP, PFT-DPW, and baseline scan policies. The application adds orbit ingest, station selection, belief visualization, and advisory schedule exports.</p>
@@ -130,12 +153,13 @@
           <span>Copy BibTeX</span>
         </button>
       </div>
-      <p class="citation-note">Research manuscript · arXiv link forthcoming</p>
+      <p class="citation-note">Research manuscript</p>
       <pre class="citation-code" tabindex="0" aria-label="BibTeX citation"><code id="bibtex">@unpublished{schreiber2026bayesiansearch,
   title  = {Bayesian Search {MPC} for Spacecraft Acquisition
             Under Orbital Uncertainty},
   author = {Schreiber, Carlo and Eddy, Duncan and
-            Kochenderfer, Mykel J.},
+            Al-Husseini, Mahdi and Woods, Derek and
+            Feyzi, Araz and Kochenderfer, Mykel},
   year   = {2026},
   note   = {Research manuscript},
   url    = {https://satellite-acquisition.github.io/}

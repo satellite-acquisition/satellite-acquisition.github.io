@@ -22,8 +22,14 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - run: node --check site.js
+      - name: Check JavaScript syntax
+        run: |
+          node --check site.js
+          find console scripts -type f \( -name '*.js' -o -name '*.mjs' \) -print0 | while IFS= read -r -d '' file; do
+            node --check "$file"
+          done
       - run: node scripts/check-site.mjs
+      - run: node scripts/check-console.mjs
 
   deploy:
     name: Deploy to GitHub Pages
@@ -45,6 +51,7 @@ jobs:
           mkdir _site
           cp index.html styles.css site.js .nojekyll LICENSE _site/
           cp -R assets _site/assets
+          cp -R console _site/console
       - uses: actions/upload-pages-artifact@v3
         with:
           path: _site

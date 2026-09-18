@@ -8,11 +8,18 @@ python3 -m http.server 8080
 ```
 
 Open <http://localhost:8080>. Edit `index.html` for paper links, citation, and
-content; `styles.css` controls the layout. The arXiv link is marked forthcoming.
+content; `styles.css` controls the layout. Kayhan validation results remain `XX`
+until measured results are available.
+
+The light-mode console in `console/` uses LEOPT's browser simulation with a
+sample orbit. It supports greedy and sweep searches, manual detections, and
+belief updates. It does not run the Python search solvers or export operational
+schedules. Run the full application from the [LEOPT repository](https://github.com/satellite-acquisition/leopt).
 
 ```bash
 node --check site.js
 node scripts/check-site.mjs
+node scripts/check-console.mjs
 ```
 
 GitHub Actions checks the site and deploys `main` to GitHub Pages. Select
