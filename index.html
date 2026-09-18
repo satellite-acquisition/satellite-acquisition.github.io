@@ -7,7 +7,7 @@
   <meta name="description" content="Bayesian Search MPC for Spacecraft Acquisition Under Orbital Uncertainty. Research from Stanford University and Kayhan Space, with single-spacecraft and fleet results and the LEOPT console.">
   <meta property="og:type" content="website">
   <meta property="og:title" content="Spacecraft Acquisition">
-  <meta property="og:description" content="Bayesian search with antenna motion constraints and a feasible continuation through the contact. Paper, results, and open-source implementation.">
+  <meta property="og:description" content="Planning antenna searches to find spacecraft after launch. Paper, single-spacecraft and fleet results, and open-source software.">
   <meta property="og:url" content="https://satellite-acquisition.github.io/">
   <meta property="og:image" content="https://satellite-acquisition.github.io/assets/leopt-logo.png">
   <meta name="twitter:card" content="summary_large_image">
@@ -53,31 +53,20 @@
     <section class="abstract-section" id="abstract" aria-labelledby="abstract-title">
       <div class="reading-width">
         <h2 id="abstract-title">Abstract</h2>
-        <p class="section-intro">After launch, uncertainty in a spacecraft’s orbit can place its signal outside a ground station’s antenna beam. The station must search before it can establish telemetry and commanding. We propose Bayesian Search Model Predictive Control (BS-MPC), which updates the orbit belief after missed detections and plans antenna pointings within the mount’s motion limits. A feasible plan for the rest of the contact lets the controller account for observations beyond its short lookahead. We evaluate acquisition during a single contact and across 100-spacecraft deployments served by a network of ground stations. In the single-contact study, BS-MPC acquires 90.2% of assigned targets, compared with 83.3% for a tube sweep, and reduces restricted mean acquisition time from 89.8 to 78.3 seconds.</p>
+        <p class="section-intro">After launch, uncertainty in a spacecraft’s orbit can place its signal outside a ground station’s antenna beam. The station must search before it can receive telemetry or send commands. Our method, Bayesian Search Model Predictive Control (BS-MPC), uses missed detections to revise where the spacecraft is likely to be and choose where to point next. It accounts for how quickly the antenna can move and how much time remains to search. We test the method during individual contacts and across 100-spacecraft deployments. In the single-contact simulations, BS-MPC acquires 90.2% of assigned targets, compared with 83.3% for a tube sweep. Average search time falls from 89.8 to 78.3 seconds, counting unsuccessful attempts at the full 192-second duration.</p>
       </div>
     </section>
 
     <section class="method-section section" id="method" aria-labelledby="method-title">
       <div class="reading-width">
         <h2 id="method-title">Bayesian search MPC</h2>
-        <p class="section-intro">The controller represents orbit uncertainty with weighted hypotheses. A missed detection reduces the weight of hypotheses that predicted a signal. The antenna then searches using the updated belief, subject to its rate and acceleration limits and the time needed to settle and observe.</p>
-        <p class="section-intro">BS-MPC begins with a feasible tube sweep. It tests changes to the next four pointings, retaining the rest of the schedule. A change is accepted only if the antenna can rejoin that schedule and the full remaining plan has a higher acquisition probability. After each miss, the controller repeats this calculation.</p>
-        <div class="belief-update">
-          <p class="equation-label">Belief update after a miss</p>
-          <math display="block" aria-label="The updated weight of hypothesis i equals its prior weight times its probability of a missed detection, normalized across all hypotheses.">
-            <msubsup><mi>w</mi><mi>i</mi><mo>+</mo></msubsup><mo>=</mo>
-            <mfrac>
-              <mrow><msub><mi>w</mi><mi>i</mi></msub><mo>[</mo><mn>1</mn><mo>−</mo><msub><mi>p</mi><mi>i</mi></msub><mo>(</mo><mi>a</mi><mo>)</mo><mo>]</mo></mrow>
-              <mrow><munder><mo>∑</mo><mi>j</mi></munder><msub><mi>w</mi><mi>j</mi></msub><mo>[</mo><mn>1</mn><mo>−</mo><msub><mi>p</mi><mi>j</mi></msub><mo>(</mo><mi>a</mi><mo>)</mo><mo>]</mo></mrow>
-            </mfrac>
-          </math>
-          <p class="equation-note">For a binary detection model with no false confirmations, <var>p</var><sub>i</sub>(<var>a</var>) is the detection probability for hypothesis <var>i</var> at pointing <var>a</var>.</p>
-        </div>
+        <p class="section-intro">The controller tracks several possible orbits and how likely each one is. After a missed detection, it gives less weight to orbits where it expected to receive a signal. The next pointing depends on this revised estimate and on where the antenna can move, settle, and observe in the time available.</p>
+        <p class="section-intro">BS-MPC starts with a sweep along the predicted track that the antenna can carry out. It tries changes to the next four pointings while keeping the later schedule. A change is accepted only when the antenna can return to that schedule and the model predicts a better chance of finding the spacecraft before the contact ends. The controller repeats this process after each miss.</p>
         <figure class="paper-figure uncertainty-figure">
           <a href="assets/figures/uncertainty-tube.png" target="_blank" rel="noopener noreferrer" aria-label="Open the orbital uncertainty figure at full resolution">
-            <img src="assets/figures/uncertainty-tube.png" alt="Orbit hypotheses concentrate along a narrow tube in the station sky, while an isotropic raster covers a much larger area." width="2100" height="1020" loading="lazy" decoding="async">
+            <img src="assets/figures/uncertainty-tube.png" alt="Possible spacecraft positions form a narrow strip in the station sky. A rectangular scan covers a much larger area." width="2100" height="1020" loading="lazy" decoding="async">
           </a>
-          <figcaption>Propagated orbit hypotheses form an elongated region in the station sky. Candidate pointings follow the tube; detection scoring retains both angular dimensions.</figcaption>
+          <figcaption>Possible spacecraft positions form a long, narrow region in the station sky. Pointings follow its length, while detection probabilities account for uncertainty both along and across the track.</figcaption>
         </figure>
       </div>
     </section>
@@ -91,7 +80,7 @@
         </div>
         <section class="results-panel" id="single-spacecraft" aria-labelledby="single-spacecraft-title">
           <h3 id="single-spacecraft-title">Single-spacecraft acquisition</h3>
-          <p class="section-intro">Each trial gives a ground station 192 seconds to acquire one spacecraft. We compare controllers on the same 2,773 reserved contacts across 96 simulated deployments, using a matched orbit prior and a constrained antenna mount.</p>
+          <p class="section-intro">Each trial gives a ground station 192 seconds to acquire one spacecraft. We compare controllers on the same 2,773 reserved contacts across 96 simulated deployments. The simulated orbit errors follow the distribution assumed by the controller, and the antenna has limits on its speed and acceleration.</p>
           <figure class="paper-figure results-figure">
             <a href="assets/figures/deployment-results.png" target="_blank" rel="noopener noreferrer" aria-label="Open the acquisition results figure at full resolution">
               <img src="assets/figures/deployment-results.png" alt="Acquisition probability over 192 seconds: BS-MPC reaches 90.2%, tube sweep 83.3%, Bayesian greedy 68.8%, and sky raster 32.9%." width="1020" height="870" loading="lazy" decoding="async">
@@ -100,7 +89,7 @@
           </figure>
           <div class="table-scroll" role="region" aria-label="Simulated acquisition results" tabindex="0">
             <table class="validation-table results-table">
-              <caption>First-contact acquisition under the matched prior</caption>
+              <caption>First-contact results</caption>
               <thead><tr><th scope="col">Controller</th><th scope="col">Acquired by 60 s (%)</th><th scope="col">Acquired by 192 s (%)</th><th scope="col">Mean time (s)</th></tr></thead>
               <tbody>
                 <tr><th scope="row">Sky raster</th><td>24.8</td><td>32.9</td><td>141.9</td></tr>

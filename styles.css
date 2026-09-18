@@ -55,10 +55,6 @@ h1 { max-width: 1140px; margin: 0 auto 24px; color: var(--ink); font-size: 44px;
 .abstract-section { padding-block: 36px; }
 .abstract-section, .results-section, .software-section { background: #f5f5f5; }
 .abstract-section .section-intro { margin-top: 18px; }
-.belief-update { text-align: center; margin-top: 24px; padding-block: 16px; }
-.equation-label { font-size: 13px; color: var(--muted); }
-math { margin-block: 19px; font-size: 25px; color: var(--ink); }
-.equation-note { max-width: 570px; margin-inline: auto; padding-inline: 16px; font-size: 12px; line-height: 1.6; color: var(--muted); }
 .paper-figure { margin: 30px 0 0; }
 .paper-figure a { display: block; }
 .paper-figure img { width: 100%; }
@@ -134,7 +130,6 @@ figcaption { margin-top: 16px; color: var(--muted); font-size: 14px; line-height
   h2 { font-size: 26px; }
   .section, .abstract-section { padding-block: 30px; }
   .section-intro { font-size: 15px; margin-top: 18px; }
-  .belief-update { margin-top: 25px; }
   .paper-figure { margin-top: 25px; }
   figcaption { font-size: 13px; }
   .results-table th:first-child { width: 34%; }
