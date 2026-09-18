@@ -1,4 +1,4 @@
-/* Layout adapted from SPAR-MPC; see LICENSE. */
+/* Website styling adapted from the SPAR-MPC website; see LICENSE. */
 :root {
   font-family: 'DM Sans', Arial, sans-serif;
   color: #4a4a4a;
@@ -34,8 +34,9 @@ strong { font-weight: 600; color: var(--ink); }
 .skip-link { position: fixed; top: 12px; left: 12px; z-index: 100; padding: 10px 16px; background: var(--ink); color: #fff; transform: translateY(-150%); }
 .skip-link:focus { transform: translateY(0); }
 
-.hero { padding: 44px 24px 26px; text-align: center; }
-.project-name { color: #8f631c; font-size: 17px; font-weight: 600; letter-spacing: .12em; margin-bottom: 12px; }
+.hero { padding: 24px 24px 26px; text-align: center; }
+.project-name { margin: 0 auto 12px; }
+.project-name img { width: 260px; height: 82px; margin-inline: auto; object-fit: cover; object-position: center 44%; }
 h1 { max-width: 1140px; margin: 0 auto 24px; color: var(--ink); font-size: 44px; font-weight: 600; line-height: 1.15; letter-spacing: -1.5px; }
 .authors { font-size: 19px; line-height: 1.5; }
 .authors span { display: inline-block; }
@@ -107,8 +108,8 @@ figcaption { margin-top: 16px; color: var(--muted); font-size: 14px; line-height
 }
 @media (max-width: 600px) {
   .reading-width, .content-width { width: calc(100% - 36px); }
-  .hero { padding: 28px 18px 23px; }
-  .project-name { font-size: 15px; margin-bottom: 12px; }
+  .hero { padding: 18px 18px 23px; }
+  .project-name img { width: 220px; height: 70px; }
   h1 { font-size: 30px; margin-bottom: 20px; line-height: 1.2; letter-spacing: -.7px; }
   .authors { max-width: 370px; margin-inline: auto; font-size: 16px; }
   .affiliation { font-size: 14px; }
