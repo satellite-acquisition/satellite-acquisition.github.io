@@ -165,5 +165,89 @@ for (const modifier of [{ button: 1 }, { ctrlKey: true }, { metaKey: true }, { s
 }
 assert.equal(openCalls, 2, 'Modified clicks should not open an extra popup.');
 
+const resultIds = ['single-spacecraft', 'fleet'];
+const tabList = elements.find(element => attributes(element[2]).id === 'results-tabs');
+assert(tabList && attributes(tabList[2]).role === 'tablist'
+  && /(?:^|\s)hidden(?:\s|=|$)/.test(tabList[2]), 'Hide the tab controls until JavaScript initializes them.');
+for (const id of resultIds) {
+  const panel = elements.find(element => attributes(element[2]).id === id);
+  const tab = elements.find(element => attributes(element[2]).id === `${id}-tab`);
+  assert(panel && !/(?:^|\s)hidden(?:\s|=|$)/.test(panel[2]), 'Both result sections must remain visible without JavaScript.');
+  assert.equal(attributes(panel[2])['aria-labelledby'], `${id}-title`);
+  assert(elements.some(element => element[1].toLowerCase() === 'h3' && attributes(element[2]).id === `${id}-title`));
+  assert(tab && tab[1].toLowerCase() === 'button' && attributes(tab[2]).role === 'tab');
+  assert.equal(attributes(tab[2])['aria-controls'], id);
+}
+
+// Exercise tab selection, focus, and history decisions without a layout engine.
+function startTabs(hash = '') {
+  const focused = [], replaced = [], listeners = {};
+  function element(id) {
+    return { id, hidden: false, attrs: {}, events: {},
+      getAttribute(name) { return this.attrs[name]; },
+      setAttribute(name, value) { this.attrs[name] = value; },
+      addEventListener(name, handler) { this.events[name] = handler; },
+      focus() { focused.push(this.id); } };
+  }
+  const panels = resultIds.map(element);
+  const tabs = resultIds.map(id => element(`${id}-tab`));
+  tabs.forEach((tab, index) => { tab.attrs['aria-controls'] = resultIds[index]; });
+  const classes = new Set();
+  const results = { classList: { add(name) { classes.add(name); } } };
+  const tablist = { hidden: true, querySelectorAll() { return tabs; } };
+  const nodes = new Map([['#results', results], ['#results-tabs', tablist], ...panels.map(panel => [`#${panel.id}`, panel])]);
+  const window = { location: { hash },
+    history: { state: { existing: true }, replaceState(state, title, fragment) {
+      replaced.push(fragment); window.location.hash = fragment;
+    } },
+    addEventListener(name, handler) { listeners[name] = handler; } };
+  vm.runInContext(siteSource, vm.createContext({ window,
+    document: { querySelector(selector) { return nodes.get(selector) ?? null; } } }), { timeout: 1000 });
+  function selected(index) {
+    tabs.forEach((tab, current) => {
+      assert.equal(tab.attrs['aria-selected'], String(current === index));
+      assert.equal(tab.tabIndex, current === index ? 0 : -1);
+      assert.equal(panels[current].hidden, current !== index);
+      assert.equal(panels[current].attrs.role, 'tabpanel');
+      assert.equal(panels[current].attrs['aria-labelledby'], tab.id);
+    });
+  }
+  function key(index, key) {
+    const event = { key, prevented: false, preventDefault() { this.prevented = true; } };
+    tabs[index].events.keydown(event);
+    return event.prevented;
+  }
+  assert(classes.has('has-tabs') && !tablist.hidden);
+  return { tabs, focused, replaced, window, listeners, selected, key };
+}
+const siteSource = await readFile(path.join(root, 'site.js'), 'utf8');
+const resultsState = startTabs();
+resultsState.selected(0);
+assert.equal(resultsState.focused.length, 0, 'Initialization must not steal focus.');
+assert.equal(resultsState.replaced.length, 0, 'Initialization must preserve the current URL.');
+resultsState.tabs[1].events.click();
+resultsState.selected(1);
+assert.equal(resultsState.focused.at(-1), 'fleet-tab');
+assert.equal(resultsState.window.location.hash, '#fleet');
+for (const [from, key, to] of [[1, 'ArrowRight', 0], [0, 'ArrowLeft', 1], [1, 'Home', 0], [0, 'End', 1]]) {
+  assert(resultsState.key(from, key));
+  resultsState.selected(to);
+  assert.equal(resultsState.focused.at(-1), `${resultIds[to]}-tab`);
+}
+assert(!resultsState.key(1, 'ArrowDown'), 'Unrelated keys must retain native behavior.');
+const focusCount = resultsState.focused.length;
+for (const [hash, selected] of [['#results', 0], ['#fleet-title', 1], ['#citation', 1], ['#single-spacecraft-title', 0]]) {
+  resultsState.window.location.hash = hash;
+  resultsState.listeners.hashchange();
+  resultsState.selected(selected);
+}
+assert.equal(resultsState.focused.length, focusCount, 'Hash navigation must not steal focus.');
+for (const hash of ['#fleet', '#fleet-title']) {
+  const deepLink = startTabs(hash);
+  deepLink.selected(1);
+  assert.equal(deepLink.focused.length, 0);
+  assert.equal(deepLink.replaced.length, 0);
+}
+
 const referenceCount = [...documents.values()].reduce((sum, document) => sum + document.references.length, 0);
-console.log(`Site checks passed: ${documents.size} HTML documents, ${referenceCount} references, project resources, and console launcher.`);
+console.log(`Site checks passed: ${documents.size} HTML documents, ${referenceCount} references, project resources, console launcher, and accessible results tabs.`);

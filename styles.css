@@ -53,6 +53,7 @@ h1 { max-width: 1140px; margin: 0 auto 24px; color: var(--ink); font-size: 44px;
 .section { padding-block: 42px; }
 .section-intro { margin-top: 20px; font-size: 16px; line-height: 1.7; }
 .abstract-section { padding-block: 36px; }
+.abstract-section, .results-section, .software-section { background: #f5f5f5; }
 .abstract-section .section-intro { margin-top: 18px; }
 .belief-update { text-align: center; margin-top: 24px; padding-block: 16px; }
 .equation-label { font-size: 13px; color: var(--muted); }
@@ -64,6 +65,15 @@ math { margin-block: 19px; font-size: 25px; color: var(--ink); }
 figcaption { margin-top: 16px; color: var(--muted); font-size: 14px; line-height: 1.6; text-align: center; }
 
 .results-figure { width: min(640px, 100%); margin-inline: auto; }
+.results-section .paper-figure img { mix-blend-mode: multiply; }
+.results-tabs { display: flex; justify-content: center; width: min(440px, 100%); margin: 24px auto 0; border-bottom: 1px solid #d5d5d5; }
+.results-tabs button { flex: 1; padding: 12px 18px; border: 0; border-bottom: 2px solid transparent; margin-bottom: -1px; background: transparent; color: var(--muted); font-size: 16px; line-height: 1.4; }
+.results-tabs button:hover { color: var(--ink); background: #ececec; }
+.results-tabs button[aria-selected="true"] { color: var(--ink); border-bottom-color: var(--ink); font-weight: 600; }
+.results-panel { padding-top: 4px; }
+.results-panel > h3 { font-size: 22px; margin-top: 28px; text-align: center; }
+.has-tabs .results-panel > h3 { display: none; }
+.results-panel:focus-visible { outline: 2px solid var(--blue); outline-offset: 8px; }
 .source-note { margin-top: 20px; color: var(--muted); font-size: 12px; line-height: 1.65; }
 
 .validation-section { border-bottom: 1px solid var(--line); }
@@ -81,14 +91,14 @@ figcaption { margin-top: 16px; color: var(--muted); font-size: 14px; line-height
 .results-table { font-variant-numeric: tabular-nums; }
 .cohort-table { text-align: center; }
 
-.software-section { padding-bottom: 34px; }
+.software-section { padding-block: 42px; }
 .software-links { display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 15px 27px; margin-top: 20px; font-size: 15px; }
 .text-link { font-weight: 600; }
 .console-launch-link { display: inline-flex; align-items: center; gap: 12px; min-height: 44px; padding: 10px 18px; border: 1px solid #555; border-radius: 3px; color: #fff; text-decoration: none; background: #363636; font-weight: 500; }
 .console-launch-link:hover { background: #202020; color: #fff; }
 .console-note { max-width: 620px; margin: 15px auto 0; font-size: 13px; line-height: 1.65; text-align: center; color: var(--muted); }
 .brahe-credit { margin-top: 22px; text-align: center; font-size: 13px; color: var(--muted); }
-.citation-section { padding-top: 26px; padding-bottom: 12px; border-top: 1px solid var(--line); }
+.citation-section { padding-top: 36px; padding-bottom: 12px; }
 .citation-heading { display: flex; justify-content: space-between; align-items: center; gap: 16px; }
 .citation-heading h2 { font-size: 26px; }
 .copy-button { display: inline-flex; align-items: center; gap: 7px; min-height: 40px; border: 0; background: transparent; padding: 8px 0 8px 12px; color: var(--muted); font-size: 13px; }
@@ -128,6 +138,8 @@ figcaption { margin-top: 16px; color: var(--muted); font-size: 14px; line-height
   .paper-figure { margin-top: 25px; }
   figcaption { font-size: 13px; }
   .results-table th:first-child { width: 34%; }
+  .results-tabs { margin-top: 20px; }
+  .results-tabs button { padding: 12px 10px; font-size: 15px; }
   .citation-heading h2 { font-size: 24px; }
   .citation-code { font-size: 11px; padding: 16px; }
   .citation-section { padding-bottom: 0; }

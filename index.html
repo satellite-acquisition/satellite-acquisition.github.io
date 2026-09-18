@@ -84,45 +84,49 @@
 
     <section class="results-section section" id="results" aria-labelledby="results-title">
       <div class="reading-width">
-        <h2 id="results-title">Single-spacecraft acquisition</h2>
-        <p class="section-intro">Each trial gives a ground station 192 seconds to acquire one spacecraft. We compare controllers on the same 2,773 reserved contacts across 96 simulated deployments, using a matched orbit prior and a constrained antenna mount.</p>
-        <figure class="paper-figure results-figure">
-          <a href="assets/figures/deployment-results.png" target="_blank" rel="noopener noreferrer" aria-label="Open the acquisition results figure at full resolution">
-            <img src="assets/figures/deployment-results.png" alt="Acquisition probability over 192 seconds: BS-MPC reaches 90.2%, tube sweep 83.3%, Bayesian greedy 68.8%, and sky raster 32.9%." width="1020" height="870" loading="lazy" decoding="async">
-          </a>
-          <figcaption>Probability of acquisition during the first contact. Bayesian greedy is ahead of BS-MPC at 60 seconds; BS-MPC acquires more targets by the end of the contact.</figcaption>
-        </figure>
-        <div class="table-scroll" role="region" aria-label="Simulated acquisition results" tabindex="0">
-          <table class="validation-table results-table">
-            <caption>First-contact acquisition under the matched prior</caption>
-            <thead><tr><th scope="col">Controller</th><th scope="col">Acquired by 60 s (%)</th><th scope="col">Acquired by 192 s (%)</th><th scope="col">Mean time (s)</th></tr></thead>
-            <tbody>
-              <tr><th scope="row">Sky raster</th><td>24.8</td><td>32.9</td><td>141.9</td></tr>
-              <tr><th scope="row">Tube sweep</th><td>37.6</td><td>83.3</td><td>89.8</td></tr>
-              <tr><th scope="row">Prior-ranked sweep</th><td>36.7</td><td>59.2</td><td>108.5</td></tr>
-              <tr><th scope="row">Frozen-prior greedy</th><td>39.4</td><td>50.8</td><td>118.5</td></tr>
-              <tr><th scope="row">Bayesian greedy</th><td>56.5</td><td>68.8</td><td>86.5</td></tr>
-              <tr><th scope="row">MPC, no continuation</th><td>61.4</td><td>79.0</td><td>74.5</td></tr>
-              <tr class="proposed-policy"><th scope="row">BS-MPC</th><td>42.3</td><td>90.2</td><td>78.3</td></tr>
-            </tbody>
-          </table>
+        <h2 id="results-title">Results</h2>
+        <div class="results-tabs" id="results-tabs" role="tablist" aria-label="Acquisition results" hidden>
+          <button type="button" role="tab" id="single-spacecraft-tab" aria-controls="single-spacecraft" aria-selected="true">Single spacecraft</button>
+          <button type="button" role="tab" id="fleet-tab" aria-controls="fleet" aria-selected="false" tabindex="-1">Fleet</button>
         </div>
-        <p class="source-note">Probabilities are conditional on receiving a reserved contact. Mean time is restricted to 192 seconds, with unsuccessful attempts contributing the full duration. The antenna rate and acceleration limits are 1.10 deg/s and 1.00 deg/s².</p>
-      </div>
-    </section>
-
-    <section class="fleet-section section" id="fleet" aria-labelledby="fleet-title">
-      <div class="reading-width">
-        <h2 id="fleet-title">Fleet acquisition</h2>
-        <p class="section-intro">We simulate four deployments of 100 spacecraft and measure the fraction acquired within 24 hours. The network grows from one to 32 sites, with four independently steerable antennas at each site and up to five attempts per spacecraft.</p>
-        <figure class="paper-figure results-figure">
-          <a href="assets/figures/fleet-network.png" target="_blank" rel="noopener noreferrer" aria-label="Open the fleet acquisition figure at full resolution">
-            <img src="assets/figures/fleet-network.png" alt="Expected fleet fraction acquired within 24 hours as the network grows from one to 32 sites, each with four antennas. At six sites, BS-MPC reaches 93.2% and tube sweep reaches 88.1%." width="1020" height="1020" loading="lazy" decoding="async">
-          </a>
-          <figcaption>Expected fraction of the fleet acquired within 24 hours. Every spacecraft is included in the denominator, including those without a reserved contact.</figcaption>
-        </figure>
-        <p class="section-intro">With six sites, BS-MPC acquires an expected 93.2% of the fleet, compared with 88.1% for tube sweep. At 32 sites, the figures are 98.6% and 97.7%. Both controllers use the same contact allocation; bookings left unused after an acquisition are not reassigned.</p>
-        <p class="source-note">These four deployments are separate from the single-spacecraft study. Sites are added in a fixed geographic order. The result is an expected acquired fraction, not the probability of acquiring every spacecraft.</p>
+        <section class="results-panel" id="single-spacecraft" aria-labelledby="single-spacecraft-title">
+          <h3 id="single-spacecraft-title">Single-spacecraft acquisition</h3>
+          <p class="section-intro">Each trial gives a ground station 192 seconds to acquire one spacecraft. We compare controllers on the same 2,773 reserved contacts across 96 simulated deployments, using a matched orbit prior and a constrained antenna mount.</p>
+          <figure class="paper-figure results-figure">
+            <a href="assets/figures/deployment-results.png" target="_blank" rel="noopener noreferrer" aria-label="Open the acquisition results figure at full resolution">
+              <img src="assets/figures/deployment-results.png" alt="Acquisition probability over 192 seconds: BS-MPC reaches 90.2%, tube sweep 83.3%, Bayesian greedy 68.8%, and sky raster 32.9%." width="1020" height="870" loading="lazy" decoding="async">
+            </a>
+            <figcaption>Probability of acquisition during the first contact. Bayesian greedy is ahead of BS-MPC at 60 seconds; BS-MPC acquires more targets by the end of the contact.</figcaption>
+          </figure>
+          <div class="table-scroll" role="region" aria-label="Simulated acquisition results" tabindex="0">
+            <table class="validation-table results-table">
+              <caption>First-contact acquisition under the matched prior</caption>
+              <thead><tr><th scope="col">Controller</th><th scope="col">Acquired by 60 s (%)</th><th scope="col">Acquired by 192 s (%)</th><th scope="col">Mean time (s)</th></tr></thead>
+              <tbody>
+                <tr><th scope="row">Sky raster</th><td>24.8</td><td>32.9</td><td>141.9</td></tr>
+                <tr><th scope="row">Tube sweep</th><td>37.6</td><td>83.3</td><td>89.8</td></tr>
+                <tr><th scope="row">Prior-ranked sweep</th><td>36.7</td><td>59.2</td><td>108.5</td></tr>
+                <tr><th scope="row">Frozen-prior greedy</th><td>39.4</td><td>50.8</td><td>118.5</td></tr>
+                <tr><th scope="row">Bayesian greedy</th><td>56.5</td><td>68.8</td><td>86.5</td></tr>
+                <tr><th scope="row">MPC, no continuation</th><td>61.4</td><td>79.0</td><td>74.5</td></tr>
+                <tr class="proposed-policy"><th scope="row">BS-MPC</th><td>42.3</td><td>90.2</td><td>78.3</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="source-note">Probabilities are conditional on receiving a reserved contact. Mean time is restricted to 192 seconds, with unsuccessful attempts contributing the full duration. The antenna rate and acceleration limits are 1.10 deg/s and 1.00 deg/s².</p>
+        </section>
+        <section class="results-panel" id="fleet" aria-labelledby="fleet-title">
+          <h3 id="fleet-title">Fleet acquisition</h3>
+          <p class="section-intro">We simulate four deployments of 100 spacecraft and measure the fraction acquired within 24 hours. The network grows from one to 32 sites, with four independently steerable antennas at each site and up to five attempts per spacecraft.</p>
+          <figure class="paper-figure results-figure">
+            <a href="assets/figures/fleet-network.png" target="_blank" rel="noopener noreferrer" aria-label="Open the fleet acquisition figure at full resolution">
+              <img src="assets/figures/fleet-network.png" alt="Expected fleet fraction acquired within 24 hours as the network grows from one to 32 sites, each with four antennas. At six sites, BS-MPC reaches 93.2% and tube sweep reaches 88.1%." width="1020" height="1020" loading="lazy" decoding="async">
+            </a>
+            <figcaption>Expected fraction of the fleet acquired within 24 hours. Every spacecraft is included in the denominator, including those without a reserved contact.</figcaption>
+          </figure>
+          <p class="section-intro">With six sites, BS-MPC acquires an expected 93.2% of the fleet, compared with 88.1% for tube sweep. At 32 sites, the figures are 98.6% and 97.7%. Both controllers use the same contact allocation; bookings left unused after an acquisition are not reassigned.</p>
+          <p class="source-note">These four deployments are separate from the single-spacecraft study. Sites are added in a fixed geographic order. The result is an expected acquired fraction, not the probability of acquiring every spacecraft.</p>
+        </section>
       </div>
     </section>
 
@@ -155,15 +159,17 @@
       </div>
     </section>
 
-    <section class="software-section section reading-width" id="software" aria-labelledby="software-title">
-      <h2 id="software-title">Explore the solver</h2>
-      <p class="section-intro">LEOPT provides the search solvers and acquisition console under an MIT license. The browser demo includes BS-MPC and the six comparison methods from the paper. You can edit the sample mission, choose a controller, and step through the search.</p>
-      <div class="software-links">
-        <a class="text-link" href="https://github.com/satellite-acquisition/leopt" target="_blank" rel="noopener noreferrer">Get the code <span aria-hidden="true">↗</span></a>
-        <a class="console-launch-link" id="launch-console" href="console/index.html" target="_blank" rel="noopener noreferrer" aria-label="Launch the LEOPT console in a new window">Launch console <span aria-hidden="true">↗</span></a>
+    <section class="software-section section" id="software" aria-labelledby="software-title">
+      <div class="reading-width">
+        <h2 id="software-title">Explore the solver</h2>
+        <p class="section-intro">LEOPT provides the search solvers and acquisition console under an MIT license. The browser demo includes BS-MPC and the six comparison methods from the paper. You can edit the sample mission, choose a controller, and step through the search.</p>
+        <div class="software-links">
+          <a class="text-link" href="https://github.com/satellite-acquisition/leopt" target="_blank" rel="noopener noreferrer">Get the code <span aria-hidden="true">↗</span></a>
+          <a class="console-launch-link" id="launch-console" href="console/index.html" target="_blank" rel="noopener noreferrer" aria-label="Launch the LEOPT console in a new window">Launch console <span aria-hidden="true">↗</span></a>
+        </div>
+        <p class="console-note">The console opens in a separate window. It uses a circular orbit and a reduced search model; the paper’s experiments use SGP4 propagation.</p>
+        <p class="brahe-credit">Orbit propagation in the paper is powered by <a href="https://github.com/duncaneddy/brahe" target="_blank" rel="noopener noreferrer">Brahe</a>.</p>
       </div>
-      <p class="console-note">The console opens in a separate window. It uses a circular orbit and a reduced search model; the paper’s experiments use SGP4 propagation.</p>
-      <p class="brahe-credit">Orbit propagation in the paper is powered by <a href="https://github.com/duncaneddy/brahe" target="_blank" rel="noopener noreferrer">Brahe</a>.</p>
     </section>
 
     <section class="citation-section section reading-width" id="citation" aria-labelledby="citation-title">
