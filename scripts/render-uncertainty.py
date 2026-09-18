@@ -11,7 +11,6 @@ import matplotlib
 
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
-from matplotlib.patches import Rectangle
 
 
 def main():
@@ -22,8 +21,6 @@ def main():
     figures = Path(__file__).resolve().parents[1] / "assets" / "figures"
     data = json.loads((figures / "uncertainty-data.json").read_text())
     points = data["points"]
-    cells = data["cells"]
-    bounds = data["rasterExtent"]
 
     plt.rcParams.update({
         "font.family": ["Arial", "DejaVu Sans", "sans-serif"],
@@ -36,25 +33,15 @@ def main():
         "svg.hashsalt": "leopt-uncertainty",
     })
     fig, axis = plt.subplots(figsize=(9, 4.6))
-    fig.subplots_adjust(left=0.115, right=0.98, bottom=0.16, top=0.86)
+    fig.subplots_adjust(left=0.115, right=0.98, bottom=0.16, top=0.96)
 
-    axis.add_patch(Rectangle(
-        (bounds["xMin"], bounds["yMin"]),
-        bounds["xMax"] - bounds["xMin"],
-        bounds["yMax"] - bounds["yMin"],
-        fill=False, edgecolor="#8b8b8b", linewidth=1.2,
-        linestyle=(0, (5, 4)), zorder=2,
-    ))
-    axis.text(bounds["xMax"] - 1.5, bounds["yMax"] - 5,
-              "Full-area scan", ha="right", va="top", color="#666666")
     axis.scatter(*zip(*points), s=23, alpha=0.58, color="#29668d",
-                 edgecolors="none", label="Possible spacecraft directions", zorder=4)
-    axis.scatter(*zip(*cells), marker="|", s=190, linewidths=1.5,
-                 color="#b27e28", label="Pointings along the track", zorder=3)
+                 edgecolors="none", zorder=3)
 
-    axis.set(xlim=(-30, 34), ylim=(-32, 32),
-             xticks=(-20, 0, 20), yticks=(-20, 0, 20),
+    axis.set(xlim=(-15, 32), ylim=(-10, 10),
+             xticks=(-10, 0, 10, 20, 30), yticks=(-10, 0, 10),
              xlabel="Along the track (°)", ylabel="Across the track (°)")
+    axis.set_aspect("equal", adjustable="box")
     axis.xaxis.labelpad = 10
     axis.yaxis.labelpad = 10
     axis.set_axisbelow(True)
@@ -62,16 +49,16 @@ def main():
     axis.spines[["top", "right"]].set_visible(False)
     axis.spines[["left", "bottom"]].set_color("#c7c7c7")
     axis.tick_params(length=0, pad=7)
-    axis.legend(loc="lower center", bbox_to_anchor=(0.5, 1.035),
-                ncol=2, frameon=False, handletextpad=0.5, columnspacing=1.5)
 
-    fig.savefig(figures / "uncertainty-tube.svg", metadata={
+    svg_path = figures / "uncertainty-tube.svg"
+    fig.savefig(svg_path, metadata={
         "Date": None,
         "Title": "Orbital uncertainty during one simulated pass",
-        "Description": "160 possible spacecraft directions, 17 along-track "
-                       "pointings, and the full-area scan extent. Coordinates "
+        "Description": "Particle belief with 160 possible spacecraft directions "
+                       "shown on equally scaled angular axes. Coordinates "
                        "recovered from the paper figure; see uncertainty-data.json.",
     })
+    svg_path.write_text("\n".join(line.rstrip() for line in svg_path.read_text().splitlines()) + "\n")
     if args.preview:
         fig.savefig(args.preview, dpi=140)
     plt.close(fig)
