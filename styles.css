@@ -36,7 +36,7 @@ strong { font-weight: 600; color: var(--ink); }
 
 .hero { padding: 56px 24px 30px; text-align: center; }
 h1 { max-width: 1140px; margin: 0 auto 24px; color: var(--ink); font-size: 44px; font-weight: 600; line-height: 1.15; letter-spacing: -1.5px; }
-.authors { max-width: 1080px; margin-inline: auto; font-size: 19px; line-height: 1.65; }
+.authors { max-width: 1180px; margin-inline: auto; font-size: 22px; line-height: 1.65; }
 .authors span { display: inline-block; }
 .authors sup, .affiliation sup { color: var(--muted); font-size: .65em; margin-left: 2px; }
 .affiliation { display: flex; flex-wrap: wrap; justify-content: center; gap: 4px 22px; font-size: 14px; margin-top: 12px; line-height: 1.6; }
@@ -122,7 +122,7 @@ figcaption { margin-top: 16px; color: var(--muted); font-size: 14px; line-height
   .reading-width, .content-width { width: calc(100% - 36px); }
   .hero { padding: 32px 18px 23px; }
   h1 { font-size: 30px; margin-bottom: 20px; line-height: 1.2; letter-spacing: -.7px; }
-  .authors { max-width: 370px; margin-inline: auto; font-size: 16px; }
+  .authors { max-width: 400px; margin-inline: auto; font-size: 18px; }
   .affiliation { font-size: 14px; }
   .hero-links { margin-top: 19px; gap: 7px; }
   .hero-links a { min-height: 40px; font-size: 14px; padding: 8px 13px; }
