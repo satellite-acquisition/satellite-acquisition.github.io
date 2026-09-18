@@ -11,6 +11,10 @@ Open <http://localhost:8080>. Edit `index.html` for paper links, citation, and
 content; `styles.css` controls the layout. Kayhan validation results remain `XX`
 until measured results are available.
 
+The uncertainty figure can be rebuilt with `python3 scripts/render-uncertainty.py`
+(requires Matplotlib). Its source coordinates and provenance are in
+`assets/figures/uncertainty-data.json`.
+
 **Launch console** opens `console/` in a separate window, with the dark theme
 and LEOPT intro animation. Edit the mission, then select **Roll out**.
 The JavaScript solvers implement BS-MPC, MPC without continuation, Bayesian

@@ -57,17 +57,24 @@
       </div>
     </section>
 
+    <section class="problem-section section" id="problem" aria-labelledby="problem-title">
+      <div class="reading-width">
+        <h2 id="problem-title">The problem</h2>
+        <p class="section-intro">An early orbit estimate tells a station when a spacecraft should pass overhead, but not exactly where to point. The possible directions can stretch far beyond a single antenna beam. The station has only a short contact to search this region, and moving the antenna, letting it settle, and listening for a signal all take time.</p>
+        <figure class="paper-figure uncertainty-figure">
+          <a href="assets/figures/uncertainty-tube.svg" target="_blank" rel="noopener noreferrer" aria-label="Open the orbital uncertainty figure at full resolution">
+            <img src="assets/figures/uncertainty-tube.svg" alt="Possible spacecraft positions form a narrow strip along the track, spanning many antenna pointings. A full-area scan also covers the largely empty region above and below it." width="900" height="460" loading="lazy" decoding="async">
+          </a>
+          <figcaption>One instant in a simulated pass. Blue dots show possible spacecraft directions; gold marks show pointings along the track. A full-area scan also covers the largely empty region above and below.</figcaption>
+        </figure>
+      </div>
+    </section>
+
     <section class="method-section section" id="method" aria-labelledby="method-title">
       <div class="reading-width">
         <h2 id="method-title">Bayesian search MPC</h2>
         <p class="section-intro">The controller tracks several possible orbits and how likely each one is. After a missed detection, it gives less weight to orbits where it expected to receive a signal. The next pointing depends on this revised estimate and on where the antenna can move, settle, and observe in the time available.</p>
         <p class="section-intro">BS-MPC starts with a sweep along the predicted track that the antenna can carry out. It tries changes to the next four pointings while keeping the later schedule. A change is accepted only when the antenna can return to that schedule and the model predicts a better chance of finding the spacecraft before the contact ends. The controller repeats this process after each miss.</p>
-        <figure class="paper-figure uncertainty-figure">
-          <a href="assets/figures/uncertainty-tube.png" target="_blank" rel="noopener noreferrer" aria-label="Open the orbital uncertainty figure at full resolution">
-            <img src="assets/figures/uncertainty-tube.png" alt="Possible spacecraft positions form a narrow strip in the station sky. A rectangular scan covers a much larger area." width="2100" height="1020" loading="lazy" decoding="async">
-          </a>
-          <figcaption>Possible spacecraft positions form a long, narrow region in the station sky. Pointings follow its length, while detection probabilities account for uncertainty both along and across the track.</figcaption>
-        </figure>
       </div>
     </section>
 
@@ -161,16 +168,17 @@
       </div>
     </section>
 
-    <section class="citation-section section reading-width" id="citation" aria-labelledby="citation-title">
-      <div class="citation-heading">
-        <h2 id="citation-title">BibTeX</h2>
-        <button class="copy-button" type="button" id="copy-citation" hidden>
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><rect x="8" y="8" width="12" height="13" rx="2"/><path d="M15 5V3H3v13h2"/></svg>
-          <span>Copy BibTeX</span>
-        </button>
-      </div>
-      <p class="citation-note">Research manuscript</p>
-      <pre class="citation-code" tabindex="0" aria-label="BibTeX citation"><code id="bibtex">@unpublished{schreiber2026bayesiansearch,
+    <section class="citation-section section" id="citation" aria-labelledby="citation-title">
+      <div class="reading-width">
+        <div class="citation-heading">
+          <h2 id="citation-title">BibTeX</h2>
+          <button class="copy-button" type="button" id="copy-citation" hidden>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><rect x="8" y="8" width="12" height="13" rx="2"/><path d="M15 5V3H3v13h2"/></svg>
+            <span>Copy BibTeX</span>
+          </button>
+        </div>
+        <p class="citation-note">Research manuscript</p>
+        <pre class="citation-code" tabindex="0" aria-label="BibTeX citation"><code id="bibtex">@unpublished{schreiber2026bayesiansearch,
   title  = {Bayesian Search {MPC} for Spacecraft Acquisition
             Under Orbital Uncertainty},
   author = {Schreiber, Carlo and Eddy, Duncan and
@@ -180,7 +188,8 @@
   note   = {Research manuscript},
   url    = {https://satellite-acquisition.github.io/}
 }</code></pre>
-      <span class="copy-status" id="copy-status" role="status" aria-live="polite"></span>
+        <span class="copy-status" id="copy-status" role="status" aria-live="polite"></span>
+      </div>
     </section>
 
     <div class="footer-band">

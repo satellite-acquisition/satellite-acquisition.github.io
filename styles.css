@@ -53,7 +53,7 @@ h1 { max-width: 1140px; margin: 0 auto 24px; color: var(--ink); font-size: 44px;
 .section { padding-block: 42px; }
 .section-intro { margin-top: 20px; font-size: 16px; line-height: 1.7; }
 .abstract-section { padding-block: 36px; }
-.abstract-section, .results-section, .software-section { background: #f5f5f5; }
+.abstract-section, .method-section, .validation-section, .citation-section { background: #f5f5f5; }
 .abstract-section .section-intro { margin-top: 18px; }
 .paper-figure { margin: 30px 0 0; }
 .paper-figure a { display: block; }
@@ -103,7 +103,7 @@ figcaption { margin-top: 16px; color: var(--muted); font-size: 14px; line-height
 .citation-note { font-size: 12px; color: var(--muted); margin-top: 9px; }
 .citation-code { background: #f5f5f5; padding: 18px 22px; margin: 16px 0 0; overflow-x: auto; font: 12px/1.7 var(--mono); color: #444; tab-size: 2; }
 .copy-status { display: block; min-height: 27px; padding-top: 7px; font-size: 12px; color: var(--blue); }
-.footer-band { margin-top: 18px; background: #fafafa; }
+.footer-band { background: #fff; }
 .site-footer { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px 24px; padding-block: 25px; font-size: 12px; color: var(--muted); }
 .site-footer a { color: #555; }
 
