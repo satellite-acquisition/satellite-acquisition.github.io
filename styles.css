@@ -39,7 +39,7 @@ h1 { max-width: 1140px; margin: 0 auto 24px; color: var(--ink); font-size: 44px;
 .authors { max-width: 1080px; margin-inline: auto; font-size: 19px; line-height: 1.65; }
 .authors span { display: inline-block; }
 .authors sup, .affiliation sup { color: var(--muted); font-size: .65em; margin-left: 2px; }
-.affiliation { display: flex; flex-wrap: wrap; justify-content: center; gap: 4px 22px; font-size: 14px; margin-top: 9px; line-height: 1.6; }
+.affiliation { display: flex; flex-direction: column; align-items: center; gap: 3px; font-size: 14px; margin-top: 12px; line-height: 1.6; }
 .hero-links { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-top: 21px; }
 .hero-links a { display: inline-flex; align-items: center; justify-content: center; gap: 7px; min-height: 40px; padding: 8px 18px; border-radius: 999px; color: #fff; background: #363636; font-size: 15px; line-height: 1.4; text-decoration: none; }
 .hero-links a:hover { background: #202020; color: #fff; }
