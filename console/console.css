@@ -1,58 +1,58 @@
-html,body{margin:0;padding:0;background:#f6f8fa;overflow:hidden}
+html,body{margin:0;padding:0;background:#090a0d;overflow:hidden}
   *{box-sizing:border-box}
   ::-webkit-scrollbar{width:9px;height:9px}
-  ::-webkit-scrollbar-thumb{background:rgba(33,62,83,.12);border-radius:5px}
+  ::-webkit-scrollbar-thumb{background:rgba(255,255,255,.12);border-radius:5px}
   ::-webkit-scrollbar-track{background:transparent}
-  input[type=range]{-webkit-appearance:none;appearance:none;height:3px;background:rgba(33,62,83,.14);outline:none;border-radius:2px}
-  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:9px;height:15px;background:#296fa1;cursor:pointer;border-radius:2px}
-  input[type=range]::-moz-range-thumb{width:9px;height:15px;border:0;background:#296fa1;cursor:pointer;border-radius:2px}
+  input[type=range]{-webkit-appearance:none;appearance:none;height:3px;background:rgba(255,255,255,.14);outline:none;border-radius:2px}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:9px;height:15px;background:#7aa6f0;cursor:pointer;border-radius:2px}
+  input[type=range]::-moz-range-thumb{width:9px;height:15px;border:0;background:#7aa6f0;cursor:pointer;border-radius:2px}
   .gl-html{position:absolute;left:0;top:0;pointer-events:none;font-family:'IBM Plex Mono',monospace;white-space:nowrap}
   @keyframes leoptLogoIn{0%{opacity:0;transform:translateY(20px) scale(.93)}100%{opacity:1;transform:translateY(0) scale(1)}}
   @keyframes leoptUp{0%{opacity:0;transform:translateY(16px)}100%{opacity:1;transform:translateY(0)}}
   @keyframes leoptFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
   @keyframes leoptSpin{to{transform:rotate(360deg)}}
-  @keyframes leoptPulse{0%{box-shadow:0 0 0 0 rgba(41,111,161,.5)}70%{box-shadow:0 0 0 16px rgba(41,111,161,0)}100%{box-shadow:0 0 0 0 rgba(41,111,161,0)}}
+  @keyframes leoptPulse{0%{box-shadow:0 0 0 0 rgba(122,166,240,.5)}70%{box-shadow:0 0 0 16px rgba(122,166,240,0)}100%{box-shadow:0 0 0 0 rgba(122,166,240,0)}}
   @keyframes leoptRise{0%{transform:translateY(24px)}100%{transform:translateY(0)}}
-  @keyframes leoptGlowW{0%,100%{border-color:rgba(33,62,83,.45)}50%{border-color:rgba(33,62,83,.95)}}
+  @keyframes leoptGlowW{0%,100%{border-color:rgba(255,255,255,.45)}50%{border-color:rgba(255,255,255,.95)}}
   @keyframes leoptArrow{0%,100%{transform:translateX(0)}50%{transform:translateX(4px)}}
   .leopt-launch{position:relative;overflow:hidden;transition:color .35s ease}
   .leopt-launch>span{position:relative;z-index:1;display:inline-flex;align-items:center;gap:12px}
-  .leopt-launch::before{content:'';position:absolute;inset:0;background:#e3edf4;transform:scaleX(0);transform-origin:left;transition:transform .38s cubic-bezier(.5,.15,.2,1);z-index:0}
+  .leopt-launch::before{content:'';position:absolute;inset:0;background:#fff;transform:scaleX(0);transform-origin:left;transition:transform .38s cubic-bezier(.5,.15,.2,1);z-index:0}
   .leopt-launch:hover{color:#05070b}
   .leopt-launch:hover::before{transform:scaleX(1)}
   .leopt-launch:hover .leopt-arrow{animation:leoptArrow .9s ease-in-out infinite}
-  .edit-mission:hover{border-color:#296fa1 !important;color:#245f8d !important}
-  .quiet-button:hover{border-color:rgba(33,62,83,.4) !important;color:#18344a !important}
-  .orbit-textarea:focus{border-color:rgba(33,62,83,.45) !important}
-  .form-input:focus{border-bottom-color:rgba(33,62,83,.5) !important}
-  .remove-station:hover{color:#a73d34 !important}
+  .edit-mission:hover{border-color:#7aa6f0 !important;color:#cfe0ff !important}
+  .quiet-button:hover{border-color:rgba(255,255,255,.4) !important;color:#eef0f3 !important}
+  .orbit-textarea:focus{border-color:rgba(255,255,255,.45) !important}
+  .form-input:focus{border-bottom-color:rgba(255,255,255,.5) !important}
+  .remove-station:hover{color:#e6a79f !important}
 
-/* The paper page and the full-page console share this light layout. */
-:root { color-scheme: light; }
-body { color: #344b5e; font-family: 'IBM Plex Sans', system-ui, sans-serif; }
-a { color: #29668d; text-underline-offset: 3px; }
+/* Responsive layout for the standalone console. */
+:root { color-scheme: dark; }
+body { color: #aab0ba; font-family: 'IBM Plex Sans', system-ui, sans-serif; }
+a { color: #7aa6f0; text-underline-offset: 3px; }
 button, input, textarea { touch-action: manipulation; }
-button:focus-visible, input:focus-visible, textarea:focus-visible, a:focus-visible { outline: 2px solid #29668d !important; outline-offset: 3px; }
-.simulation-note { flex: 0 0 auto; padding: 8px 20px; border-bottom: 1px solid #dbe4eb; background: #f3f7fa; color: #526778; font-size: 11px; line-height: 1.5; }
+button:focus-visible, input:focus-visible, textarea:focus-visible, a:focus-visible { outline: 2px solid #7aa6f0 !important; outline-offset: 3px; }
+.simulation-note { flex: 0 0 auto; padding: 8px 20px; border-bottom: 1px solid rgba(255,255,255,.08); background: #0d1118; color: #8b929c; font-size: 11px; line-height: 1.5; }
 .simulation-note a { white-space: nowrap; margin-left: 8px; }
-.loading-message, .globe-fallback { padding: 24px; font: 14px/1.6 'IBM Plex Sans', system-ui, sans-serif; color: #526778; }
+.loading-message, .globe-fallback { padding: 24px; font: 14px/1.6 'IBM Plex Sans', system-ui, sans-serif; color: #8b929c; }
 .globe-fallback { max-width: 340px; margin: 50px auto; }
 .console-rail { width: 360px !important; flex-basis: 360px !important; }
 .console-header { gap: 12px !important; }
 .console-header > div:last-child { min-width: 140px; }
-.globe-pane { background: radial-gradient(ellipse at 48% 42%, #fff 0%, #eff4f8 74%) !important; }
+.globe-pane { background: radial-gradient(ellipse at 48% 42%, #13161c 0%, #090a0d 74%) !important; }
 .gl-html { user-select: none; }
 .console-transport { gap: 10px !important; }
 .console-transport button { white-space: nowrap; }
 .console-transport .clock-control { min-width: 120px; }
 .console-transport .truth-control { width: 140px !important; }
-.mission-panel { background: #fff !important; }
+.mission-panel { background: #0a0e16 !important; }
 .mission-panel > div:first-child { display: none; }
-.mission-footer { background: #f3f7fa !important; }
+.mission-footer { background: #0d1118 !important; }
 .mission-step > div:first-child { flex-basis: 40px !important; }
 .mission-fields { padding-top: 12px !important; }
-.leopt-launch { border-color: #8da8bb !important; }
-.leopt-launch:hover { color: #18344a !important; }
+.leopt-launch { border-color: rgba(255,255,255,.45) !important; }
+.leopt-launch:hover { color: #05070b !important; }
 @media (max-width: 850px) {
   .console-header { padding: 0 14px !important; gap: 8px !important; }
   .console-header > div:first-child { flex-direction: column; gap: 2px !important; }
@@ -69,7 +69,7 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, a:focus-visib
   .console-shell { min-height: 100vh; height: auto !important; width: 100% !important; }
   .console-body { flex-direction: column; min-height: 760px !important; }
   .globe-pane { flex: 0 0 330px !important; min-height: 330px; }
-  .console-rail { flex: 1 0 430px !important; width: 100% !important; min-height: 430px !important; border-left: 0 !important; border-top: 1px solid #dbe4eb; }
+  .console-rail { flex: 1 0 430px !important; width: 100% !important; min-height: 430px !important; border-left: 0 !important; border-top: 1px solid rgba(255,255,255,.08); }
   .console-header { height: 64px !important; flex-basis: 64px !important; }
   .console-header > div:last-child { min-width: 80px; }
   .console-header > div:last-child > span:last-child { font-size: 15px !important; }
@@ -86,4 +86,30 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, a:focus-visib
 }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; }
+}
+
+.console-intro { position: fixed; inset: 0; z-index: 60; overflow: hidden; display: flex; align-items: center; justify-content: center; background: radial-gradient(ellipse 82% 72% at 50% 38%, #101725 0%, #0a0e16 56%, #05070b 100%); transition: opacity .55s ease, transform .6s ease; }
+.intro-stars { position: absolute; inset: 0; opacity: .65; background-image: radial-gradient(1.4px 1.4px at 18% 28%, rgba(255,255,255,.7), transparent), radial-gradient(1.2px 1.2px at 78% 22%, rgba(255,255,255,.5), transparent), radial-gradient(1px 1px at 62% 66%, rgba(255,255,255,.45), transparent), radial-gradient(1.3px 1.3px at 33% 74%, rgba(255,255,255,.5), transparent), radial-gradient(1px 1px at 88% 56%, rgba(255,255,255,.4), transparent), radial-gradient(1px 1px at 11% 58%, rgba(255,255,255,.4), transparent); }
+.intro-ring { position: absolute; pointer-events: none; }
+.intro-ring-one { width: 780px; height: 780px; animation: leoptSpin 70s linear infinite; opacity: .55; }
+.intro-ring-two { width: 560px; height: 560px; animation: leoptSpin 48s linear infinite reverse; opacity: .5; }
+.intro-content { position: relative; display: flex; flex-direction: column; align-items: center; text-align: center; width: min(760px, 92vw); margin-top: -45px; }
+.intro-artwork { width: 100%; aspect-ratio: 1280 / 720; }
+.intro-launch { margin-top: -18px; padding: 16px 0; width: 236px; border: 1px solid rgba(255,255,255,.45); border-radius: 0; background: transparent; color: #fff; font: 600 13px 'IBM Plex Sans', system-ui, sans-serif; letter-spacing: .34em; text-indent: .34em; cursor: pointer; animation: leoptRise .85s ease .35s both, leoptGlowW 3.4s ease-in-out 1.2s infinite; }
+.intro-arrow { display: inline-block; }
+.intro-caption { margin: 18px 0 0; font-size: 11px; color: #9099a8; letter-spacing: .04em; }
+.intro-tagline { position: absolute; bottom: 24px; margin: 0; font-size: 9px; letter-spacing: .22em; color: #768294; }
+@media (max-width: 620px) {
+  .intro-content { margin-top: -25px; }
+  .intro-launch { margin-top: 8px; }
+  .intro-tagline { font-size: 8px; letter-spacing: .12em; bottom: 20px; }
+}
+@media (max-height: 500px) and (min-width: 621px) {
+  .intro-content { width: min(560px, 80vw); margin-top: -36px; }
+  .intro-launch { margin-top: -35px; padding: 12px 0; }
+  .intro-caption { margin-top: 10px; }
+  .intro-tagline { bottom: 10px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .console-intro, .intro-ring, .intro-launch { animation: none !important; transition: none !important; }
 }

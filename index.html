@@ -40,16 +40,15 @@
       </nav>
     </header>
 
-    <section class="demo-section" id="demo" aria-label="Interactive LEOPT console">
-      <div class="demo-heading">
-        <span>Interactive console <span class="demo-label">Sample simulation</span></span>
-        <a href="console/index.html" target="_blank" rel="noopener noreferrer">Open full screen <span aria-hidden="true">↗</span></a>
+    <section class="video-section content-width" id="demo" aria-label="LEOPT demonstration">
+      <div class="video-frame">
+        <iframe src="https://www.youtube-nocookie.com/embed/CapYyRrfLU8?rel=0"
+          title="LEOPT demonstration: satellite acquisition and antenna search"
+          width="960" height="540"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+          referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
       </div>
-      <div class="demo-frame">
-        <iframe src="console/index.html" title="Interactive LEOPT acquisition console with a sample orbit" width="1160" height="650" allowfullscreen></iframe>
-      </div>
-      <p class="demo-caption">Explore a sample orbit, compare greedy and sweep searches, and update the belief after each observation. <a href="https://youtu.be/CapYyRrfLU8" target="_blank" rel="noopener noreferrer">Watch the video <span aria-hidden="true">↗</span></a></p>
-      <p class="demo-note">The demo uses a simplified orbit and detection model. The paper’s search solvers are available in the <a href="https://github.com/satellite-acquisition/leopt" target="_blank" rel="noopener noreferrer">LEOPT repository</a>.</p>
+      <p class="video-caption">LEOPT acquisition console <span aria-hidden="true">·</span> <a href="https://youtu.be/CapYyRrfLU8" target="_blank" rel="noopener noreferrer">Watch on YouTube <span aria-hidden="true">↗</span></a></p>
     </section>
 
     <section class="abstract-section" id="abstract" aria-labelledby="abstract-title">
@@ -140,8 +139,9 @@
       <p class="section-intro">The MIT-licensed Python library includes Bayesian search, continuation rollout, POMCP, PFT-DPW, and baseline scan policies. The application adds orbit ingest, station selection, belief visualization, and advisory schedule exports.</p>
       <div class="software-links">
         <a class="text-link" href="https://github.com/satellite-acquisition/leopt" target="_blank" rel="noopener noreferrer">Get the code <span aria-hidden="true">↗</span></a>
-        <a href="https://github.com/satellite-acquisition/leopt/blob/main/examples/search.py" target="_blank" rel="noopener noreferrer">Try the search example <span aria-hidden="true">↗</span></a>
+        <a class="console-launch-link" id="launch-console" href="console/index.html" target="_blank" rel="noopener noreferrer" aria-label="Launch the LEOPT console in a new window">Launch console <span aria-hidden="true">↗</span></a>
       </div>
+      <p class="console-note">Try a sample mission in your browser: explore the orbit, compare greedy and sweep searches, and update the belief after each observation.</p>
       <p class="brahe-credit">Orbit validation powered by <a href="https://github.com/duncaneddy/brahe" target="_blank" rel="noopener noreferrer">Brahe</a>.</p>
     </section>
 

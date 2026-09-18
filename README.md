@@ -11,8 +11,9 @@ Open <http://localhost:8080>. Edit `index.html` for paper links, citation, and
 content; `styles.css` controls the layout. Kayhan validation results remain `XX`
 until measured results are available.
 
-The light-mode console in `console/` uses LEOPT's browser simulation with a
-sample orbit. It supports greedy and sweep searches, manual detections, and
+**Launch console** opens `console/` in a separate window, with the dark theme
+and LEOPT intro animation. The browser simulation uses a sample orbit and
+supports greedy and sweep searches, manual detections, and
 belief updates. It does not run the Python search solvers or export operational
 schedules. Run the full application from the [LEOPT repository](https://github.com/satellite-acquisition/leopt).
 

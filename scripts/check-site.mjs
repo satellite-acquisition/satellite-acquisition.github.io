@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import { readFile, readdir, stat } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import vm from 'node:vm';
 
 const root = fileURLToPath(new URL('../', import.meta.url));
 const documents = new Map();
@@ -93,18 +94,76 @@ assert(/bibtex/i.test(resourceNav[0]) && /href=["']#citation["']/.test(resourceN
   'Resource navigation must link to the BibTeX citation.');
 assert(!/\barxiv\b/i.test(html), 'Remove the unavailable arXiv resource and its placeholder text.');
 
-const demo = elements.find((element) => {
+const video = elements.find((element) => {
   const attrs = attributes(element[2]);
   return element[1].toLowerCase() === 'iframe'
-    && /^(?:\.\/)?console\/(?:index\.html)?(?:[?#].*)?$/.test(attrs.src ?? '');
+    && /^https:\/\/(?:www\.)?youtube(?:-nocookie)?\.com\/embed\/CapYyRrfLU8(?:[?/#]|$)/.test(attrs.src ?? '');
 });
-assert(demo, 'Embed the local interactive console in the project page.');
-assert(demo.index > resourceNav.index + resourceNav[0].length,
-  'The console should follow the Code and BibTeX controls.');
+assert(video, 'Embed the LEOPT video in the project page.');
+assert(video.index > resourceNav.index + resourceNav[0].length,
+  'The video should follow the Code and BibTeX controls.');
 const abstract = elements.find((element) => attributes(element[2]).id === 'abstract');
-assert(abstract && demo.index < abstract.index, 'The console should appear before the abstract.');
+assert(abstract && video.index < abstract.index, 'The video should appear before the abstract.');
+assert(!elements.some((element) => element[1].toLowerCase() === 'iframe'
+  && /^(?:\.\/)?console\//.test(attributes(element[2]).src ?? '')),
+  'The console should open separately, without an embedded copy in the page.');
 assert(references.some((reference) => /^https:\/\/(?:youtu\.be\/|www\.youtube\.com\/watch\?v=)CapYyRrfLU8(?:[?&#]|$)/.test(reference)),
   'Keep the project video available as an external fallback link.');
 
+const software = [...html.matchAll(/<section\b[^>]*>[\s\S]*?<\/section>/gi)]
+  .find((match) => /\bid=["']software["']/.test(match[0]));
+const launch = elements.find((element) => attributes(element[2]).id === 'launch-console');
+assert(software && launch && launch.index > software.index
+  && launch.index < software.index + software[0].length,
+  'Explore LEOPT must include the console launcher.');
+const launchAttrs = attributes(launch[2]);
+assert.equal(launch[1].toLowerCase(), 'a', 'The console launcher needs a link fallback.');
+assert.equal(launchAttrs.href, 'console/index.html', 'Launch the local browser console.');
+assert.equal(launchAttrs.target, '_blank', 'The console should open in a separate window or tab.');
+assert(launchAttrs.rel?.split(/\s+/).includes('noopener'), 'The console link must isolate its opener.');
+
+const consoleDocument = documents.get('console/index.html');
+assert(consoleDocument.elements.some((element) => element[1].toLowerCase() === 'script'
+  && attributes(element[2]).src === 'intro.js'), 'The console must load its intro animation.');
+const introSource = await readFile(path.join(root, 'console/intro.js'), 'utf8');
+const logoReference = introSource.match(/\bLOGO_SRC\s*=\s*["']([^"']+)["']/)?.[1];
+assert(logoReference, 'The intro animation needs a logo source.');
+assert((await stat(path.resolve(root, 'console', logoReference)).catch(() => null))?.isFile(),
+  'The intro animation logo must exist at its referenced path.');
+
+// Check the launcher handler's fallback decisions without simulating a browser.
+let launchHandler;
+let popup;
+let openCalls = 0;
+let navigatedTo;
+const consoleUrl = 'https://satellite-acquisition.github.io/console/index.html';
+const link = { href: consoleUrl, addEventListener(event, handler) { launchHandler = handler; } };
+const launcherContext = vm.createContext({
+  document: { querySelector(selector) { return selector === '#launch-console' ? link : null; } },
+  window: { open() { openCalls++; return popup; } },
+});
+vm.runInContext(await readFile(path.join(root, 'site.js'), 'utf8'), launcherContext, { timeout: 1000 });
+assert.equal(typeof launchHandler, 'function', 'The console launch link needs a click handler.');
+function click(overrides = {}) {
+  const event = { button: 0, defaultPrevented: false, ...overrides,
+    preventDefault() { this.defaultPrevented = true; } };
+  launchHandler(event);
+  return event;
+}
+popup = { opener: {}, location: { replace(url) {
+  assert.equal(popup.opener, null, 'Isolate the popup before navigating it.');
+  navigatedTo = url;
+} } };
+assert(click().defaultPrevented, 'Opening the popup should suppress a duplicate tab.');
+assert.equal(navigatedTo, consoleUrl, 'The popup should navigate to the console.');
+assert.equal(openCalls, 1);
+popup = null;
+assert(!click().defaultPrevented, 'A blocked popup must leave the normal link fallback available.');
+assert.equal(openCalls, 2);
+for (const modifier of [{ button: 1 }, { ctrlKey: true }, { metaKey: true }, { shiftKey: true }, { altKey: true }]) {
+  assert(!click(modifier).defaultPrevented, 'Modified clicks must preserve the native link behavior.');
+}
+assert.equal(openCalls, 2, 'Modified clicks should not open an extra popup.');
+
 const referenceCount = [...documents.values()].reduce((sum, document) => sum + document.references.length, 0);
-console.log(`Site checks passed: ${documents.size} HTML documents, ${referenceCount} references, and project resources.`);
+console.log(`Site checks passed: ${documents.size} HTML documents, ${referenceCount} references, project resources, and console launcher.`);

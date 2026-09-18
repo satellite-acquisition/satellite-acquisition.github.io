@@ -6,7 +6,7 @@
 
 class LeoptConsole extends React.Component {
   state = {
-    t: 0, playing: false, mode: 'rehearse', rolledOut: true, revealed: false, dragOver: false,
+    t: 0, playing: false, mode: 'rehearse', rolledOut: true, revealed: false, dragOver: false, splashVisible: true, launching: false,
     truthDeg: this.props.truthDeg ?? 1.8,
     strategy: this.props.strategy ?? 'infogreedy',
     treatment: this.props.beliefTreatment ?? 'heatmap',
@@ -16,12 +16,20 @@ class LeoptConsole extends React.Component {
   componentDidMount() {
     this.setup();
     this.reducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    this.initGlobe().catch(() => this.showGlobeFallback());
   }
   componentWillUnmount() {
-    clearInterval(this._timer); clearInterval(this._auto); cancelAnimationFrame(this._raf);
+    clearInterval(this._timer); clearInterval(this._auto); clearTimeout(this._launchTimer); cancelAnimationFrame(this._raf);
     if (this._ro) this._ro.disconnect();
     if (this.gl) this.gl.renderer.dispose();
+  }
+  launch() {
+    if (this.state.launching || !this.state.splashVisible) return;
+    const start = () => this.setState({ splashVisible: false, launching: false, mode: 'rehearse', playing: false }, () => {
+      this.initGlobe().catch(() => this.showGlobeFallback());
+    });
+    if (this.reducedMotion || (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches)) { start(); return; }
+    this.setState({ launching: true });
+    this._launchTimer = setTimeout(start, 620);
   }
   showGlobeFallback() {
     if (!this.globeEl) return;
@@ -199,7 +207,7 @@ class LeoptConsole extends React.Component {
     return a == null ? `rgb(${c[0]},${c[1]},${c[2]})` : `rgba(${c[0]},${c[1]},${c[2]},${a})`;
   }
   pFill(p) { return this.pStroke(p, 0.16 + 0.26 * Math.max(0, Math.min(1, p))); }
-  beliefRGB(w) { const t = Math.max(0, Math.min(1, w)); return [(35 + 10 * t) / 255, (85 + 30 * t) / 255, (125 + 35 * t) / 255]; }
+  beliefRGB(w) { const t = Math.max(0, Math.min(1, w)); return [(48 + 78 * t) / 255, (92 + 116 * t) / 255, (150 + 105 * t) / 255]; }
   makeSoftTex() {
     const T = window.THREE, c = document.createElement('canvas'); c.width = c.height = 64;
     const x = c.getContext('2d'), g = x.createRadialGradient(32, 32, 0, 32, 32, 32);
@@ -225,26 +233,26 @@ class LeoptConsole extends React.Component {
     this.camDist = 330; camera.position.set(0, 0, this.camDist);
     const world = new T.Group(); world.rotation.x = -0.32; world.rotation.y = -1.1; scene.add(world);
     this.gl = { T, renderer, scene, camera, world };
-    world.add(new T.Mesh(new T.SphereGeometry(R, 64, 48), new T.MeshBasicMaterial({ color: 0xe3edf4 })));
-    world.add(new T.Mesh(new T.SphereGeometry(R * 1.08, 48, 32), new T.MeshBasicMaterial({ color: 0x296fa1, transparent: true, opacity: 0.05, side: T.BackSide })));
+    world.add(new T.Mesh(new T.SphereGeometry(R, 64, 48), new T.MeshBasicMaterial({ color: 0x11151c })));
+    world.add(new T.Mesh(new T.SphereGeometry(R * 1.08, 48, 32), new T.MeshBasicMaterial({ color: 0x7aa6f0, transparent: true, opacity: 0.05, side: T.BackSide })));
     const gp = [];
     for (let lat = -75; lat <= 75; lat += 15) { let pv = null; for (let lng = -180; lng <= 180; lng += 4) { const v = this.ll2v(lat, lng, R * 1.002); if (pv) gp.push(pv.x, pv.y, pv.z, v.x, v.y, v.z); pv = v; } }
     for (let lng = -180; lng < 180; lng += 15) { let pv = null; for (let lat = -88; lat <= 88; lat += 4) { const v = this.ll2v(lat, lng, R * 1.002); if (pv) gp.push(pv.x, pv.y, pv.z, v.x, v.y, v.z); pv = v; } }
     const gg = new T.BufferGeometry(); gg.setAttribute('position', new T.Float32BufferAttribute(gp, 3));
-    world.add(new T.LineSegments(gg, new T.LineBasicMaterial({ color: 0x597d97, transparent: true, opacity: 0.19 })));
+    world.add(new T.LineSegments(gg, new T.LineBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.075 })));
     const mkLine = (col, op) => { const l = new T.Line(new T.BufferGeometry(), new T.LineBasicMaterial({ color: col, transparent: true, opacity: op })); l.frustumCulled = false; world.add(l); return l; };
-    this.gl.orbit = mkLine(0x155c94, 1); this.gl.gtrack = mkLine(0x416980, 0.25);
+    this.gl.orbit = mkLine(0x7aa6f0, 1); this.gl.gtrack = mkLine(0xffffff, 0.12);
     const softTex = this.makeSoftTex();
     this.gl.belief = new T.Points(new T.BufferGeometry(), new T.PointsMaterial({ size: 7.5, map: softTex, vertexColors: true, transparent: true, opacity: 0.5, sizeAttenuation: true, depthWrite: false }));
     this.gl.belief.frustumCulled = false; world.add(this.gl.belief);
-    this.gl.uncArc = new T.Line(new T.BufferGeometry(), new T.LineBasicMaterial({ color: 0x296fa1, transparent: true, opacity: 0.3 })); this.gl.uncArc.frustumCulled = false; world.add(this.gl.uncArc);
+    this.gl.uncArc = new T.Line(new T.BufferGeometry(), new T.LineBasicMaterial({ color: 0x7aa6f0, transparent: true, opacity: 0.3 })); this.gl.uncArc.frustumCulled = false; world.add(this.gl.uncArc);
     this.gl.stationGroup = new T.Group(); world.add(this.gl.stationGroup); this.buildStationMeshes();
-    this.gl.beam = new T.Mesh(new T.CircleGeometry(1, 44), new T.MeshBasicMaterial({ color: 0x96631e, transparent: true, opacity: 0.3, side: T.DoubleSide, depthWrite: false })); this.gl.beam.frustumCulled = false; world.add(this.gl.beam);
-    this.gl.beamRing = new T.LineLoop(new T.BufferGeometry(), new T.LineBasicMaterial({ color: 0x96631e })); this.gl.beamRing.frustumCulled = false; world.add(this.gl.beamRing);
-    this.gl.los = mkLine(0x96631e, 0.65);
+    this.gl.beam = new T.Mesh(new T.CircleGeometry(1, 44), new T.MeshBasicMaterial({ color: 0xe0a96b, transparent: true, opacity: 0.3, side: T.DoubleSide, depthWrite: false })); this.gl.beam.frustumCulled = false; world.add(this.gl.beam);
+    this.gl.beamRing = new T.LineLoop(new T.BufferGeometry(), new T.LineBasicMaterial({ color: 0xe0a96b })); this.gl.beamRing.frustumCulled = false; world.add(this.gl.beamRing);
+    this.gl.los = mkLine(0xe0a96b, 0.65);
     this.gl.pulse = new T.Mesh(new T.RingGeometry(0.92, 1, 48), new T.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.5, side: T.DoubleSide, depthWrite: false })); world.add(this.gl.pulse);
     this.gl.sat = this.buildSatModel(); this.gl.sat.frustumCulled = false; world.add(this.gl.sat);
-    this.gl.truth = new T.Mesh(new T.SphereGeometry(1.5, 10, 10), new T.MeshBasicMaterial({ color: 0xab4237 })); this.gl.truth.frustumCulled = false; world.add(this.gl.truth);
+    this.gl.truth = new T.Mesh(new T.SphereGeometry(1.5, 10, 10), new T.MeshBasicMaterial({ color: 0xd8786e })); this.gl.truth.frustumCulled = false; world.add(this.gl.truth);
     this.labelLayer = document.createElement('div'); this.labelLayer.style.cssText = 'position:absolute;inset:0;pointer-events:none;overflow:hidden'; el.appendChild(this.labelLayer);
     this.buildLabels();
     this.loadCoast(); this.bindControls();
@@ -261,9 +269,9 @@ class LeoptConsole extends React.Component {
     const T = this.gl.T, R = this.R, grp = this.gl.stationGroup;
     while (grp.children.length) { const c = grp.children.pop(); if (c.geometry) c.geometry.dispose(); grp.remove(c); }
     for (const st of this.stations) {
-      const m = new T.Mesh(new T.SphereGeometry(1.1, 10, 10), new T.MeshBasicMaterial({ color: 0x355f7b })); m.position.copy(this.ll2v(st.lat, st.lng, R * 1.004)); grp.add(m);
+      const m = new T.Mesh(new T.SphereGeometry(1.1, 10, 10), new T.MeshBasicMaterial({ color: 0xeef0f3 })); m.position.copy(this.ll2v(st.lat, st.lng, R * 1.004)); grp.add(m);
       const cg = new T.BufferGeometry(); cg.setAttribute('position', new T.Float32BufferAttribute(this.circlePts(st.lat, st.lng, this.covAng, R * 1.004), 3));
-      grp.add(new T.LineLoop(cg, new T.LineBasicMaterial({ color: 0x416980, transparent: true, opacity: 0.23 })));
+      grp.add(new T.LineLoop(cg, new T.LineBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.16 })));
     }
   }
   rebuildStations() { if (!this._globeReady) return; this.buildStationMeshes(); while (this.labelLayer.firstChild) this.labelLayer.removeChild(this.labelLayer.firstChild); this.buildLabels(); }
@@ -281,11 +289,11 @@ class LeoptConsole extends React.Component {
     this.labels = [];
     const mk = html => { const d = document.createElement('div'); d.className = 'gl-html'; d.innerHTML = html; this.labelLayer.appendChild(d); return d; };
     for (const st of this.stations) {
-      const el = mk(`<div style="display:flex;align-items:center;gap:5px"><span style="width:5px;height:5px;background:#18344a;display:inline-block;border-radius:50%"></span><span style="font-size:9px;color:#40586a;letter-spacing:.04em;text-shadow:0 1px 3px #fff">${st.code}</span></div>`);
+      const el = mk(`<div style="display:flex;align-items:center;gap:5px"><span style="width:5px;height:5px;background:#eef0f3;display:inline-block;border-radius:50%"></span><span style="font-size:9px;color:#c3c8d0;letter-spacing:.04em;text-shadow:0 1px 3px #000">${st.code}</span></div>`);
       const v = this.ll2v(st.lat, st.lng, this.R * 1.03); this.labels.push({ el, src: () => v });
     }
-    this.labels.push({ el: mk('<span style="font-size:8px;color:#245f8d;letter-spacing:.06em;text-shadow:0 1px 3px #fff">&#9670; SAT</span>'), src: () => this.gl.sat.position });
-    this.labels.push({ el: mk('<span style="font-size:8px;color:#a73d34;letter-spacing:.06em;text-shadow:0 1px 3px #fff">&#9671; TRUTH</span>'), src: () => this.gl.truth.position, hidden: () => !this.state.revealed });
+    this.labels.push({ el: mk('<span style="font-size:8px;color:#cfe0ff;letter-spacing:.06em;text-shadow:0 1px 3px #000">&#9670; SAT</span>'), src: () => this.gl.sat.position });
+    this.labels.push({ el: mk('<span style="font-size:8px;color:#e6a79f;letter-spacing:.06em;text-shadow:0 1px 3px #000">&#9671; TRUTH</span>'), src: () => this.gl.truth.position, hidden: () => !this.state.revealed });
   }
   async loadCoast() {
     try {
@@ -296,7 +304,7 @@ class LeoptConsole extends React.Component {
       const addRing = ring => { let pv = null; for (const [lng, lat] of ring) { const v = this.ll2v(lat, lng, this.R * 1.005); if (pv) pos.push(pv.x, pv.y, pv.z, v.x, v.y, v.z); pv = v; } };
       for (const f of fc.features) { const gm = f.geometry; if (gm.type === 'Polygon') gm.coordinates.forEach(addRing); else if (gm.type === 'MultiPolygon') gm.coordinates.forEach(p => p.forEach(addRing)); }
       const g = new T.BufferGeometry(); g.setAttribute('position', new T.Float32BufferAttribute(pos, 3));
-      this.gl.world.add(new T.LineSegments(g, new T.LineBasicMaterial({ color: 0x3c647d, transparent: true, opacity: 0.48 })));
+      this.gl.world.add(new T.LineSegments(g, new T.LineBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.26 })));
     } catch (e) {}
   }
   bindControls() {
@@ -307,7 +315,7 @@ class LeoptConsole extends React.Component {
     el.addEventListener('pointerleave', () => { drag = false; this._dragging = false; el.style.cursor = 'grab'; if (this.tip) this.tip.style.display = 'none'; });
     el.addEventListener('wheel', e => { e.preventDefault(); this.camDist = Math.max(150, Math.min(700, this.camDist + e.deltaY * 0.25)); }, { passive: false });
     this.ray = new T.Raycaster(); this.ray.params.Points.threshold = 8;
-    this.tip = document.createElement('div'); this.tip.style.cssText = "position:absolute;pointer-events:none;display:none;z-index:8;min-width:188px;background:rgba(255,255,255,.93);border:1px solid rgba(41,111,161,.45);border-radius:7px;padding:10px 12px;backdrop-filter:blur(4px);box-shadow:0 6px 22px rgba(0,0,0,.45)"; this.globeEl.appendChild(this.tip);
+    this.tip = document.createElement('div'); this.tip.style.cssText = "position:absolute;pointer-events:none;display:none;z-index:8;min-width:188px;background:rgba(13,15,19,.93);border:1px solid rgba(122,166,240,.45);border-radius:7px;padding:10px 12px;backdrop-filter:blur(4px);box-shadow:0 6px 22px rgba(0,0,0,.45)"; this.globeEl.appendChild(this.tip);
   }
   hover(e) {
     if (!this._globeReady || !this.tip || this._dragging) return;
@@ -320,13 +328,13 @@ class LeoptConsole extends React.Component {
     let mean = 0; for (let k = 0; k < P.nGrid; k++) mean += disp[k] * this.deltas[k];
     let v = 0; for (let k = 0; k < P.nGrid; k++) v += disp[k] * (this.deltas[k] - mean) ** 2; const sig = Math.sqrt(v);
     const ent = this.entropy(disp), km = Math.round(3 * sig * Math.PI / 180 * (P.Re + P.h));
-    const row = (k, val, c) => `<div style="display:flex;justify-content:space-between;gap:20px;font-size:10px;line-height:1.8"><span style="color:#526778">${k}</span><span style="color:${c || '#213e53'};font-family:'IBM Plex Mono',monospace">${val}</span></div>`;
-    this.tip.innerHTML = `<div style="color:#245f8d;font-size:10px;font-weight:600;letter-spacing:.08em;margin-bottom:6px">POSITION UNCERTAINTY</div>` +
-      row('Along-track 1\u03c3', sig.toFixed(2) + '\u00b0', '#96631e') +
+    const row = (k, val, c) => `<div style="display:flex;justify-content:space-between;gap:20px;font-size:10px;line-height:1.8"><span style="color:#8b929c">${k}</span><span style="color:${c || '#e6e8ec'};font-family:'IBM Plex Mono',monospace">${val}</span></div>`;
+    this.tip.innerHTML = `<div style="color:#cfe0ff;font-size:10px;font-weight:600;letter-spacing:.08em;margin-bottom:6px">POSITION UNCERTAINTY</div>` +
+      row('Along-track 1\u03c3', sig.toFixed(2) + '\u00b0', '#e0a96b') +
       row('3\u03c3 search span', '\u00b1' + (3 * sig).toFixed(2) + '\u00b0 \u00b7 ' + km + ' km') +
       row('Est. offset', (mean >= 0 ? '+' : '') + mean.toFixed(2) + '\u00b0') +
       row('Belief entropy', ent.toFixed(2) + ' bits') +
-      row('Status', this.state.acquired ? 'ACQUIRED' : 'SEARCHING', this.state.acquired ? '#20794f' : '#96631e');
+      row('Status', this.state.acquired ? 'ACQUIRED' : 'SEARCHING', this.state.acquired ? '#6bbf94' : '#e0a96b');
     let x = e.clientX - r.left + 16, y = e.clientY - r.top + 16;
     if (x > r.width - 210) x = e.clientX - r.left - 204; if (y > r.height - 130) y = e.clientY - r.top - 130;
     this.tip.style.left = x + 'px'; this.tip.style.top = y + 'px'; this.tip.style.display = 'block'; el.style.cursor = 'help';
@@ -410,8 +418,8 @@ class LeoptConsole extends React.Component {
   setStrategy(s) { this.setState({ strategy: s }, () => { this.computeGanttColors(); this.updateGlobe(true); }); }
   strategyBadge(st) {
     return st.strategy === 'sweep'
-      ? { strategyLabel: 'SWEEP', strategyColor: '#9b621a' }
-      : { strategyLabel: 'GREEDY', strategyColor: '#29668d' };
+      ? { strategyLabel: 'SWEEP', strategyColor: '#e0a96b' }
+      : { strategyLabel: 'GREEDY', strategyColor: '#7aa6f0' };
   }
   setTreatment(tr) { this.setState({ treatment: tr }, () => this.updateGlobe(true)); }
   setMode(m) {
@@ -522,7 +530,7 @@ class LeoptConsole extends React.Component {
   loadSampleOrbit() { this.setOpm(this.sampleOPM()); }
   toggleAdv() { this.setState({ advOpen: !this.state.advOpen }); }
   setAdvTab(t) { this.setState({ advTab: t }); }
-  advTabStyle(active) { return `padding:8px 13px;font-family:'IBM Plex Sans',sans-serif;font-size:9px;font-weight:600;letter-spacing:.12em;cursor:pointer;border:0;border-bottom:2px solid ${active ? '#296fa1' : 'transparent'};background:transparent;color:${active ? '#245f8d' : '#657687'}`; }
+  advTabStyle(active) { return `padding:8px 13px;font-family:'IBM Plex Sans',sans-serif;font-size:9px;font-weight:600;letter-spacing:.12em;cursor:pointer;border:0;border-bottom:2px solid ${active ? '#7aa6f0' : 'transparent'};background:transparent;color:${active ? '#cfe0ff' : '#646b76'}`; }
   buildSatModel() {
     const T = this.gl.T, grp = new T.Group();
     grp.add(new T.Mesh(new T.BoxGeometry(1.6, 1.6, 2.4), new T.MeshStandardMaterial({ color: 0xeef2f7, metalness: 0.55, roughness: 0.4, emissive: 0x2a3340, emissiveIntensity: 0.5 })));
@@ -551,8 +559,8 @@ class LeoptConsole extends React.Component {
   hms(s) { s = Math.max(0, Math.round(s)); const h = Math.floor(s / 3600), m = Math.floor(s % 3600 / 60), x = s % 60; return `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(x).padStart(2,'0')}`; }
   mmss(s) { s = Math.max(0, Math.round(s)); return `${Math.floor(s / 60)}m${String(s % 60).padStart(2,'0')}s`; }
   segStyle(active, color) {
-    const c = color || '#296fa1';
-    return `padding:7px 11px;font-family:'IBM Plex Sans',sans-serif;font-size:10px;font-weight:500;letter-spacing:.04em;cursor:pointer;border-radius:5px;border:1px solid ${active ? c : 'rgba(33,62,83,.12)'};background:${active ? 'rgba(41,111,161,.14)' : 'transparent'};color:${active ? '#245f8d' : '#5d7080'}`;
+    const c = color || '#7aa6f0';
+    return `padding:7px 11px;font-family:'IBM Plex Sans',sans-serif;font-size:10px;font-weight:500;letter-spacing:.04em;cursor:pointer;border-radius:5px;border:1px solid ${active ? c : 'rgba(255,255,255,.12)'};background:${active ? 'rgba(122,166,240,.14)' : 'transparent'};color:${active ? '#cfe0ff' : '#7b828d'}`;
   }
 
   renderVals() {
@@ -565,14 +573,14 @@ class LeoptConsole extends React.Component {
 
     const ended = this.schedule && st.stepIndex >= this.schedule.length;
     const acqStr = st.acquired ? '+' + this.hms(st.acqT) : (ended ? 'NO ACQ' : 'SEARCHING');
-    const acqColor = st.acquired ? '#20794f' : (ended ? '#ab4237' : '#96631e');
+    const acqColor = st.acquired ? '#6bbf94' : (ended ? '#d8786e' : '#e0a96b');
     const statCells = [
       { label: 'ACQUISITION', value: acqStr, color: acqColor },
-      { label: 'DWELLS EXEC', value: String(this.log.length), color: '#203f54' },
-      { label: 'NON-DETECT', value: String(nonDet), color: nonDet > 0 ? '#ad4a54' : '#203f54' },
-      { label: '1\u03c3 ALONG-TRK', value: sigma.toFixed(2) + '\u00b0', color: '#96631e' },
-      { label: 'ENTROPY', value: entShown.toFixed(2), color: '#203f54' },
-      { label: 'MAX GAP', value: this.mmss(this.maxGap), color: this.maxGap > 1800 ? '#ad4a54' : '#203f54' }
+      { label: 'DWELLS EXEC', value: String(this.log.length), color: '#dadee4' },
+      { label: 'NON-DETECT', value: String(nonDet), color: nonDet > 0 ? '#d8959c' : '#dadee4' },
+      { label: '1\u03c3 ALONG-TRK', value: sigma.toFixed(2) + '\u00b0', color: '#e0a96b' },
+      { label: 'ENTROPY', value: entShown.toFixed(2), color: '#dadee4' },
+      { label: 'MAX GAP', value: this.mmss(this.maxGap), color: this.maxGap > 1800 ? '#d8959c' : '#dadee4' }
     ];
 
     const slot = this.schedule ? this.schedule[st.stepIndex] : null;
@@ -590,7 +598,7 @@ class LeoptConsole extends React.Component {
       code: s.code,
       passes: (this.passesByStation[s.name] || []).map(p => {
         const active = t >= p.tAOS && t <= p.tLOS;
-        return { leftPct: (p.tAOS / P.window * 100).toFixed(2), widthPct: Math.max(0.5, (p.tLOS - p.tAOS) / P.window * 100).toFixed(2), bg: p.__bg, border: active ? '#18344a' : p.__border, glow: active ? '0 0 0 1px rgba(24,52,74,.4)' : 'none' };
+        return { leftPct: (p.tAOS / P.window * 100).toFixed(2), widthPct: Math.max(0.5, (p.tLOS - p.tAOS) / P.window * 100).toFixed(2), bg: p.__bg, border: active ? '#eef0f3' : p.__border, glow: active ? '0 0 0 1px rgba(238,240,243,.4)' : 'none' };
       })
     }));
     const axisTicks = []; for (let h = 0; h <= Math.round(P.window / 3600); h++) axisTicks.push({ label: h + 'h' });
@@ -637,6 +645,9 @@ class LeoptConsole extends React.Component {
     ];
     const planSummary = `${(f.stations || []).length} STATIONS \u00b7 ${f.windowH || '?'}h WINDOW \u00b7 ${f.alt || '?'} km \u00b7 ${f.strategy === 'sweep' ? 'SWEEP' : 'GREEDY'}`;
     return {
+      dashboardOpen: !st.splashVisible, splashOpen: st.splashVisible,
+      splashOpacity: st.launching ? 0 : 1, splashScale: st.launching ? '1.04' : '1',
+      splashPointer: st.launching ? 'none' : 'auto', onLaunch: () => this.launch(),
       globeRef: el => { this.globeEl = el; },
       clockStr: this.hms(t), windowStr: this.hms(P.window), windowSec: Math.round(P.window), clockVal: t, clockPct: (t / P.window * 100).toFixed(2),
       acqStr, acqColor,
@@ -645,10 +656,10 @@ class LeoptConsole extends React.Component {
       statCells, rows, axisTicks, sparkPath,
       acquired: st.acquired, showDwell, ...cd,
       ...this.strategyBadge(st),
-      revealLabel: st.revealed ? 'TRUTH \u25c9 SHOWN' : 'REVEAL TRUTH', revealStyle: this.segStyle(st.revealed, '#ab4237'),
+      revealLabel: st.revealed ? 'TRUTH \u25c9 SHOWN' : 'REVEAL TRUTH', revealStyle: this.segStyle(st.revealed, '#d8786e'),
       truthStr: (st.truthDeg >= 0 ? '+' : '') + st.truthDeg.toFixed(1) + '\u00b0', truthVal: st.truthDeg,
       playLabel: st.playing ? '\u2759\u2759 PAUSE' : '\u25b6 PLAY', playStyle: this.segStyle(st.playing) + ';padding:8px 14px',
-      autoLabel: this._auto ? '\u25a0 STOP AUTO' : '\u21bb AUTO-RUN LOOP', autoStyle: this.segStyle(!!this._auto, '#96631e') + ';padding:8px 12px',
+      autoLabel: this._auto ? '\u25a0 STOP AUTO' : '\u21bb AUTO-RUN LOOP', autoStyle: this.segStyle(!!this._auto, '#e0a96b') + ';padding:8px 12px',
       planOpen: st.mode === 'plan', chromeOpen: st.mode === 'rehearse',
       orbitFields, groundFields, simFields, advTabs, showOrbit, showAntenna, showSimulation, stationRows, planStrategies, presets, planSummary,
       opmValue: f.opm || '', parsedSummary, advOpen: st.advOpen, advCaret: st.advOpen ? '\u25be' : '\u25b8',
@@ -656,7 +667,7 @@ class LeoptConsole extends React.Component {
       fileInputRef: el => { this.fileInput = el; }, onBrowse: () => this.openFilePicker(), onPickFile: e => this.readPickedFile(e),
       showEdit: st.mode === 'rehearse', onEditPlan: () => this.setMode('plan'),
       onCancelPlan: () => this.setMode('rehearse'), onRollout: () => this.rollout(), onAddStation: () => this.addStation(),
-      planBack: st.rolledOut, dragOver: st.dragOver, dropBorder: st.dragOver ? 'rgba(41,111,161,.6)' : 'rgba(33,62,83,.12)',
+      planBack: st.rolledOut, dragOver: st.dragOver, dropBorder: st.dragOver ? 'rgba(122,166,240,.6)' : 'rgba(255,255,255,.12)',
       onDragOver: e => { e.preventDefault(); if (!this.state.dragOver) this.setState({ dragOver: true }); },
       onDragLeave: e => { e.preventDefault(); this.setState({ dragOver: false }); },
       onDropFile: e => this.readDroppedFile(e),

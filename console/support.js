@@ -4,7 +4,7 @@
   'use strict';
 
   const root = document.getElementById('leopt-root');
-  if (!window.React || !window.ReactDOM || !window.LeoptConsole) {
+  if (!window.React || !window.ReactDOM || !window.LeoptConsole || !window.LeoptIntro) {
     root.replaceChildren();
     const message = document.createElement('p');
     message.className = 'loading-message';
