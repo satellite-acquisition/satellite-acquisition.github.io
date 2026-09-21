@@ -1,0 +1,240 @@
+% Website panels adapted from paper/figures/headline/headline.tex (revision 19).
+% Rebuild with scripts/render-headline.py. Photo credits are in index.html and LICENSE.
+\documentclass{article}
+\ifcase\panel
+  \errmessage{Choose panel 1, 2, or 3}
+\or
+  \def\panelwidth{3.7cm}
+\or
+  \def\panelwidth{7.8cm}
+\or
+  \def\panelwidth{7.2cm}
+\fi
+\usepackage[paperwidth=\panelwidth,paperheight=6.1cm,margin=0pt]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage{helvet}
+\renewcommand{\familydefault}{\sfdefault}
+\usepackage{graphicx}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,calc,fadings,shadings}
+\pagestyle{empty}
+\setlength{\parindent}{0pt}
+\setlength{\topskip}{0pt}
+\definecolor{space}{HTML}{040A12}
+\definecolor{beam}{HTML}{BADBFF}
+\definecolor{particle}{HTML}{FFE7A5}
+\definecolor{border}{HTML}{20262D}
+
+% Vector clip of the upper-right spacecraft in the ORIGINAL CubeSat JPG.
+% Arguments: centre x, centre y, width in cm, rotation in degrees, opacity.
+% Source coordinates use y up from bottom, pivot (2860,1744).
+% Faint copies denote hypotheses for ONE spacecraft, not a deployed fleet.
+\newcommand{\spacecraft}[5]{%
+  \pgfmathsetlengthmacro{\pixelunit}{#3*1cm/466}%
+  \pgfmathsetlengthmacro{\photowidth}{4928*\pixelunit}%
+  \begin{scope}[shift={(#1,#2)},rotate=#4,opacity=#5,transparency group]
+    \begin{scope}[x=\pixelunit,y=\pixelunit]
+      \begin{scope}[shift={(-2860,-1744)}]
+        \clip (2628,1714) -- (2638,1725) -- (2637,1731) --
+          (3021,1896) -- (3029,1893) -- (3024,1887) --
+          (3042,1893) -- (3094,1771) -- (3080,1761) --
+          (3083,1754) -- (2704,1591) -- (2683,1592) --
+          (2674,1599) -- (2678,1610) -- (2671,1620) --
+          (2640,1701) -- (2629,1705) -- cycle;
+        \node[anchor=south west,inner sep=0pt,transform shape] at (0,0)
+          {\includegraphics[width=\photowidth]{\photodir/cubesat.jpg}};
+      \end{scope}
+    \end{scope}
+  \end{scope}%
+}
+
+\begin{document}
+\noindent
+\begin{tikzpicture}[
+  x=1cm,y=1cm,
+  font=\fontsize{7.5}{9}\selectfont,
+  panel border/.style={draw=border,line width=.65pt},
+  white arrow/.style={white,-{Stealth[length=1.45mm,width=1.1mm]},line width=.55pt},
+  every node/.append style={inner sep=0pt,outer sep=0pt}
+]
+\path[use as bounding box] (0,0) rectangle (\panelwidth,6.1);
+\ifnum\panel=1
+\begin{scope}
+  \clip (0,0) rectangle (3.7,6.1);
+  \node[anchor=south] at (1.85,0)
+    {\includegraphics[height=6.1cm]{\photodir/launch.jpg}};
+\end{scope}
+\draw[panel border] (0,0) rectangle (3.7,6.1);
+\fi
+\ifnum\panel=2
+% POST-RELEASE UNCERTAINTY. Earth and spacecraft come from cubesat.jpg.
+\begin{scope}
+  \fill[space] (0,.72) rectangle (7.8,6.1);
+  % Original cloud texture, clipped to a schematic curved Earth horizon.
+  % This uses the lower-left Earth area of cubesat.jpg, away from spacecraft.
+  % No clouds or other photographic content are synthesized.
+  \foreach \i in {48,...,1}{
+    \pgfmathsetmacro{\w}{9*\i/48}
+    \draw[beam,line width=\w pt,opacity=.018]
+      (0,1.75) .. controls (2.1,2.40) and (5.25,2.57) .. (7.8,2.16);
+  }
+  \begin{scope}
+    \clip (0,.72) -- (0,1.75)
+      .. controls (2.1,2.40) and (5.25,2.57) .. (7.8,2.16)
+      -- (7.8,.72) -- cycle;
+    \node[anchor=south west] at (-1.017,.1)
+      {\includegraphics[width=16.714cm]{\photodir/cubesat.jpg}};
+  \end{scope}
+  \draw[beam,opacity=.85,line width=.45pt]
+    (0,1.75) .. controls (2.1,2.40) and (5.25,2.57) .. (7.8,2.16);
+
+  % One shared local axis keeps the nominal orbit, ellipse centre, and
+  % all possible spacecraft states exactly aligned when this group moves.
+  \begin{scope}[shift={(4.0,4.0)},rotate=-17]
+    \shade[ball color=white,opacity=.25] (0,0)
+      ellipse[x radius=3.43,y radius=.63];
+    \draw[white,opacity=.30,line width=.5pt] (0,0)
+      ellipse[x radius=3.43,y radius=.63];
+    \draw[white,dash pattern=on 3.4pt off 2.5pt,line width=.65pt]
+      (-4.02,0) -- (3.95,0);
+    % Seven illustrative possible states, strongest near the prior centre.
+    % Opacities communicate a qualitative belief, not measured probabilities.
+    \spacecraft{-2.82}{0}{.78}{-23}{.14}
+    \spacecraft{-1.88}{0}{.78}{-23}{.30}
+    \spacecraft{-.94}{0}{.78}{-23}{.58}
+    \spacecraft{0}{0}{.94}{-23}{1}
+    \spacecraft{.94}{0}{.78}{-23}{.62}
+    \spacecraft{1.88}{0}{.78}{-23}{.34}
+    \spacecraft{2.82}{0}{.78}{-23}{.16}
+  \end{scope}
+  \node[align=center,text=white,font=\fontsize{8}{9.4}\selectfont]
+    at (3.15,5.49) {Possible states\\of one spacecraft};
+  \draw[white arrow,shorten <=4pt] (2.58,5.28) .. controls (2.39,5.12) and (2.18,4.93) .. (2.07,4.78);
+  \draw[white arrow] (3.71,5.25) .. controls (3.87,4.93) and (3.92,4.53) .. (3.88,4.22);
+
+  % White legend strip.
+  \fill[white] (0,0) rectangle (7.8,.72);
+  \draw[border,line width=.4pt] (0,.72) -- (7.8,.72);
+  \draw[border,dash pattern=on 3pt off 2pt,line width=.7pt] (.6,.36) -- (1.32,.36);
+  \node[anchor=west] at (1.44,.36) {Estimated orbit};
+  \filldraw[fill=black!13,draw=black!22,line width=.4pt]
+    (4.0,.36) ellipse[x radius=.34,y radius=.18];
+  \node[anchor=west] at (4.45,.36) {Uncertainty region};
+  \draw[panel border] (0,0) rectangle (7.8,6.1);
+\end{scope}
+
+\fi
+\ifnum\panel=3
+% GROUND-BASED ACQUISITION: source photo plus vector annotations.
+\begin{scope}
+  \begin{scope}
+    \clip (0,0) rectangle (7.2,6.1);
+    % Fit the photograph to this illustrative panel; source stays unchanged.
+    \node[anchor=south west] at (0,0)
+      {\includegraphics[width=7.2cm,height=6.1cm]{\photodir/antenna.jpg}};
+  \end{scope}
+  \coordinate (beam-origin) at (3.60,3.63);
+  % Lower the orbit and its attached artwork together; the beam origin above
+  % remains fixed at the accepted position on the antenna.
+  \begin{scope}[yshift=-1.5mm]
+  \coordinate (target) at (6.12,5.28);
+  % The beam ends on the orbit itself, with a curved cap instead of a flat
+  % triangle edge. The original orbit is continued back to t=-.35, and its
+  % narrower t=.32 to .87 segment is reused for both the beam cap and orbit.
+  \coordinate (beam-left) at (5.442603,5.511057);
+  \coordinate (beam-right) at (6.849520,5.044667);
+  \def\beamOrbitArc{(beam-left)
+    .. controls (5.947714,5.375044) and (6.407813,5.207935)
+    .. (beam-right)}
+  % Curved cylindrical tube centred on the orbit, plus a probability profile
+  % above it. Both are schematic. The tube width is not a calibrated bound.
+  % The profile returns to its baseline
+  % at both ends. Three separated peaks illustrate a multimodal belief.
+  % Height is qualitative, not displacement or calibrated probability;
+  % the faint fill distinguishes this profile from a second orbit track.
+  \begin{scope}[declare function={
+    orbitX(\t)=3.348140*(1-\t)^3+3*4.954100*(1-\t)^2*\t+3*6.093500*(1-\t)*\t^2+7.16*\t^3;
+    orbitY(\t)=5.806521*(1-\t)^3+3*5.785900*(1-\t)^2*\t+3*5.321500*(1-\t)*\t^2+4.93*\t^3;
+    orbitDX(\t)=3*(1.605960*(1-\t)^2+2*1.139400*(1-\t)*\t+1.066500*\t^2);
+    orbitDY(\t)=3*(-.020621*(1-\t)^2-2*.464400*(1-\t)*\t-.391500*\t^2);
+    orbitN(\t)=sqrt(orbitDX(\t)^2+orbitDY(\t)^2);
+    tubeX(\t,\r)=orbitX(\t)-\r*orbitDY(\t)/orbitN(\t);
+    tubeY(\t,\r)=orbitY(\t)+\r*orbitDX(\t)/orbitN(\t);
+    profile(\t)=4*\t*(1-\t)*(.42*exp(-((\t-.20)/.070)^2)+.55*exp(-((\t-.44)/.080)^2)+.75*exp(-((\t-.70)/.085)^2));
+    profileX(\t)=orbitX(\t)-profile(\t)*orbitDY(\t)/orbitN(\t);
+    profileY(\t)=orbitY(\t)+profile(\t)*orbitDX(\t)/orbitN(\t);
+  }]
+    % Constant-radius tube following the curved centreline. The final cap is
+    % inset from the image edge so its complete elliptical rim is visible.
+    \def\tubeUpper{plot[domain=0:.96,samples=101,variable=\t]
+      ({tubeX(\t,.23)},{tubeY(\t,.23)})}
+    \def\tubeLower{plot[domain=.96:0,samples=101,variable=\t]
+      ({tubeX(\t,-.23)},{tubeY(\t,-.23)})}
+    \path[fill=beam,opacity=.14] \tubeUpper
+      -- plot[domain=.96:0,samples=101,variable=\t]
+      ({tubeX(\t,-.23)},{tubeY(\t,-.23)}) -- cycle;
+    \draw[beam!20!white,opacity=.52,line width=.45pt] \tubeUpper;
+    \draw[beam!20!white,opacity=.40,line width=.45pt] \tubeLower;
+    % A restrained longitudinal highlight gives the tube a rounded surface.
+    \draw[white,opacity=.16,line width=1.1pt]
+      plot[domain=0:.96,samples=101,variable=\t]
+      ({tubeX(\t,.085)},{tubeY(\t,.085)});
+    \foreach \endparameter in {0,.96}{
+      \pgfmathsetmacro{\capx}{orbitX(\endparameter)}
+      \pgfmathsetmacro{\capy}{orbitY(\endparameter)}
+      \pgfmathsetmacro{\capangle}{atan2(orbitDY(\endparameter),orbitDX(\endparameter))}
+      \begin{scope}[shift={(\capx,\capy)},rotate=\capangle]
+        \filldraw[fill=beam,fill opacity=.12,draw=beam!15!white,
+          draw opacity=.65,line width=.5pt]
+          (0,0) ellipse[x radius=.085,y radius=.23];
+      \end{scope}
+    }
+    % Beam and density stay above the translucent tube; the dashed orbit is
+    % redrawn last so the tube centre remains easy to follow.
+    \path[fill=beam,opacity=.20]
+      (beam-origin) -- \beamOrbitArc -- cycle;
+    \draw[beam,opacity=.70,line width=.55pt]
+      (beam-left) -- (beam-origin) -- (beam-right);
+    \draw[beam,opacity=.48,line width=.4pt] \beamOrbitArc;
+    \draw[white,line width=.6pt,dash pattern=on 3.7pt off 2.8pt]
+      (beam-origin) -- (target);
+    \def\pointingProfile{plot[domain=0:1,samples=161,variable=\t]
+      ({profileX(\t)},{profileY(\t)})}
+    \path[fill=beam,opacity=.20]
+      \pointingProfile
+      .. controls (6.093500,5.321500) and (4.954100,5.785900)
+      .. (3.348140,5.806521) -- cycle;
+    \draw[beam!25!white,line width=.8pt] \pointingProfile;
+    % Equal-size illustrative particles: local count is proportional to the
+    % SAME profile used above. Arc-length weighting keeps concentration per
+    % unit orbit length proportional to profile height, despite the Bezier
+    % parameter's nonuniform speed. A fixed seed makes the layout reproducible.
+    \pgfmathsetseed{190926}
+    \foreach \particleBin in {0,...,47}{
+      \pgfmathsetmacro{\binCentre}{(\particleBin+.5)*.97/48}
+      \pgfmathtruncatemacro{\particleCount}{round(130*.97/48*profile(\binCentre)*orbitN(\binCentre))}
+      \ifnum\particleCount>0\relax
+        \foreach \particleIndex in {1,...,\particleCount}{
+          \pgfmathsetmacro{\particleT}{(\particleBin+.08+.84*rnd)*.97/48}
+          % A projected circular cross-section; full dots stay inside the
+          % tube: maximum offset .19 + radius .014 < tube radius .23.
+          \pgfmathsetmacro{\particleR}{.19*sqrt(rnd)*sin(360*rnd)}
+          \fill[particle,opacity=.90]
+            ({tubeX(\particleT,\particleR)},{tubeY(\particleT,\particleR)})
+            circle[radius=.014];
+        }
+      \fi
+    }
+  \end{scope}
+  \draw[white,line width=.65pt,dash pattern=on 3.7pt off 2.8pt]
+    (3.348140,5.806521) .. controls (4.145172,5.796287) and (4.827286,5.676746)
+    .. \beamOrbitArc
+    .. controls (6.953924,5.006076) and (7.057300,4.967700) .. (7.16,4.93);
+  \end{scope}
+
+  \draw[panel border] (0,0) rectangle (7.2,6.1);
+\end{scope}
+
+\fi
+\end{tikzpicture}%
+\end{document}

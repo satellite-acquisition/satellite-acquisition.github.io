@@ -94,16 +94,31 @@ assert(/bibtex/i.test(resourceNav[0]) && /href=["']#citation["']/.test(resourceN
   'Resource navigation must link to the BibTeX citation.');
 assert(!/\barxiv\b/i.test(html), 'Remove the unavailable arXiv resource and its placeholder text.');
 
-const video = elements.find((element) => {
-  const attrs = attributes(element[2]);
-  return element[1].toLowerCase() === 'iframe'
-    && /^https:\/\/(?:www\.)?youtube(?:-nocookie)?\.com\/embed\/CapYyRrfLU8(?:[?/#]|$)/.test(attrs.src ?? '');
-});
-assert(video, 'Embed the LEOPT video in the project page.');
-assert(video.index > resourceNav.index + resourceNav[0].length,
-  'The video should follow the Code and BibTeX controls.');
+const headline = [...html.matchAll(/<figure\b([^>]*)>[\s\S]*?<\/figure>/gi)]
+  .find(match => attributes(match[1]).id === 'demo');
+assert(headline, 'Include the project image sequence in the demo figure.');
+assert(headline.index > resourceNav.index + resourceNav[0].length,
+  'The project image sequence should follow the Code and BibTeX controls.');
 const abstract = elements.find((element) => attributes(element[2]).id === 'abstract');
-assert(abstract && video.index < abstract.index, 'The video should appear before the abstract.');
+assert(abstract && headline.index + headline[0].length < abstract.index,
+  'The project image sequence should appear before the abstract.');
+const headlineImages = [...headline[0].matchAll(/<img\b([^>]*)>/gi)];
+assert.deepEqual(headlineImages.map(match => attributes(match[1]).src), [
+  'assets/figures/headline-launch.webp',
+  'assets/figures/headline-uncertainty.webp',
+  'assets/figures/headline-acquisition.webp',
+], 'Show launch, orbital uncertainty, and acquisition in that order.');
+const caption = headline[0].match(/<figcaption\b[^>]*>[\s\S]*?<\/figcaption>/i);
+assert(caption && caption.index > headlineImages.at(-1).index,
+  'Place the photo credits after the image sequence.');
+const creditLinks = [...caption[0].matchAll(/<a\b([^>]*)>/gi)]
+  .map(match => attributes(match[1]).href);
+for (const source of [
+  'https://www.flickr.com/photos/spacex/50631643917/',
+  'https://creativecommons.org/licenses/by-nc/2.0/',
+  'https://www.nasa.gov/image-detail/goldstone-dss14-01/',
+  'https://commons.wikimedia.org/wiki/File:ISS-51_CubeSat_deployment_-_A_pair_of_CubeSats.jpg',
+]) assert(creditLinks.includes(source), `Missing photo source or license credit: ${source}`);
 assert(!elements.some((element) => element[1].toLowerCase() === 'iframe'
   && /^(?:\.\/)?console\//.test(attributes(element[2]).src ?? '')),
   'The console should open separately, without an embedded copy in the page.');

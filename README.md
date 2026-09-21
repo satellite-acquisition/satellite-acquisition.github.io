@@ -15,6 +15,17 @@ The uncertainty figure can be rebuilt with `python3 scripts/render-uncertainty.p
 (requires Matplotlib). Its source coordinates and provenance are in
 `assets/figures/uncertainty-data.json`.
 
+The opening figure adapts revision 19 of the paper's headline artwork into
+three responsive panels. Photo credits and source terms appear below it and
+in `LICENSE`. To rebuild the WebP images from the original photo folder:
+
+```bash
+python3 scripts/render-headline.py ../leopt-search-1/paper/figures/headline
+```
+
+This requires pdfLaTeX with TikZ, Poppler, and `cwebp`. The website layout is in
+`scripts/headline-web.tex`; the paper's source files are left unchanged.
+
 **Launch console** opens `console/` in a separate window, with the dark theme
 and LEOPT intro animation. Edit the mission, then select **Roll out**.
 The JavaScript solvers implement BS-MPC, MPC without continuation, Bayesian

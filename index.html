@@ -39,16 +39,41 @@
       </nav>
     </header>
 
-    <section class="video-section content-width" id="demo" aria-label="LEOPT demonstration">
-      <div class="video-frame">
-        <iframe src="https://www.youtube-nocookie.com/embed/CapYyRrfLU8?rel=0"
-          title="LEOPT demonstration: satellite acquisition and antenna search"
-          width="960" height="540"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-          referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+    <figure class="overview content-width" id="demo" aria-label="Launch, orbital uncertainty, and ground acquisition">
+      <div class="overview-panels">
+        <div class="overview-step overview-launch">
+          <h2><span>1</span> Launch</h2>
+          <div class="overview-art">
+            <a href="assets/figures/headline-launch.webp" target="_blank" rel="noopener noreferrer" aria-label="Open the launch panel at full resolution">
+              <img src="assets/figures/headline-launch.webp" alt="A Falcon 9 rocket lifting off." width="525" height="865" fetchpriority="high" decoding="async">
+            </a>
+          </div>
+          <p>Deployment into orbit.</p>
+        </div>
+        <div class="overview-step">
+          <h2><span>2</span> Orbital uncertainty</h2>
+          <div class="overview-art">
+            <a href="assets/figures/headline-uncertainty.webp" target="_blank" rel="noopener noreferrer" aria-label="Open the orbital uncertainty panel at full resolution">
+              <img src="assets/figures/headline-uncertainty.webp" alt="Possible positions of one spacecraft spread along its estimated orbit above Earth; faint copies show the uncertainty." width="1106" height="865" decoding="async">
+            </a>
+          </div>
+          <p>An orbit estimate leaves many possible positions for one spacecraft.</p>
+        </div>
+        <div class="overview-step">
+          <h2><span>3</span> Acquisition</h2>
+          <div class="overview-art">
+            <a href="assets/figures/headline-acquisition.webp" target="_blank" rel="noopener noreferrer" aria-label="Open the acquisition panel at full resolution">
+              <img src="assets/figures/headline-acquisition.webp" alt="A ground antenna points a receive beam toward a cloud of possible spacecraft positions along an orbit." width="1021" height="865" decoding="async">
+            </a>
+          </div>
+          <p>The antenna slews, settles, and listens for the signal.</p>
+        </div>
       </div>
-      <p class="video-caption">LEOPT acquisition console <span aria-hidden="true">·</span> <a href="https://youtu.be/CapYyRrfLU8" target="_blank" rel="noopener noreferrer">Watch on YouTube <span aria-hidden="true">↗</span></a></p>
-    </section>
+      <figcaption>
+        <span class="overview-note">Spacecraft copies and particles represent possible states of one target. Photographs are illustrative; uncertainty and beam overlays are schematic.</span>
+        <span class="photo-credits">Photos: <a href="https://www.flickr.com/photos/spacex/50631643917/" target="_blank" rel="noopener noreferrer">SpaceX, “Sentinel-6 Mission”</a> (<a href="https://creativecommons.org/licenses/by-nc/2.0/" target="_blank" rel="noopener noreferrer">CC BY-NC 2.0</a>; cropped), via <a href="https://spaceflightnow.com/2020/11/29/photos-falcon-9-launches-and-lands-at-vandenberg-air-force-base/" target="_blank" rel="noopener noreferrer">Spaceflight Now</a>; <a href="https://commons.wikimedia.org/wiki/File:ISS-51_CubeSat_deployment_-_A_pair_of_CubeSats.jpg" target="_blank" rel="noopener noreferrer">NASA via Wikimedia Commons</a> (CubeSat and Earth); <a href="https://www.nasa.gov/image-detail/goldstone-dss14-01/" target="_blank" rel="noopener noreferrer">NASA</a> (antenna).</span>
+      </figcaption>
+    </figure>
 
     <section class="abstract-section" id="abstract" aria-labelledby="abstract-title">
       <div class="reading-width">
@@ -162,6 +187,7 @@
         <div class="software-links">
           <a class="text-link" href="https://github.com/satellite-acquisition/leopt" target="_blank" rel="noopener noreferrer">Get the code <span aria-hidden="true">↗</span></a>
           <a class="console-launch-link" id="launch-console" href="console/index.html" target="_blank" rel="noopener noreferrer" aria-label="Launch the LEOPT console in a new window">Launch console <span aria-hidden="true">↗</span></a>
+          <a class="text-link" href="https://youtu.be/CapYyRrfLU8" target="_blank" rel="noopener noreferrer">Watch the demo <span aria-hidden="true">↗</span></a>
         </div>
         <p class="console-note">The console opens in a separate window. It uses a circular orbit and a reduced search model; the paper’s experiments use SGP4 propagation.</p>
         <p class="brahe-credit">Orbit propagation in the paper is powered by <a href="https://github.com/duncaneddy/brahe" target="_blank" rel="noopener noreferrer">Brahe</a>.</p>

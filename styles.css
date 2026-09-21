@@ -44,11 +44,19 @@ h1 { max-width: 1140px; margin: 0 auto 24px; color: var(--ink); font-size: 44px;
 .hero-links a { display: inline-flex; align-items: center; justify-content: center; gap: 7px; min-height: 40px; padding: 8px 18px; border-radius: 999px; color: #fff; background: #363636; font-size: 15px; line-height: 1.4; text-decoration: none; }
 .hero-links a:hover { background: #202020; color: #fff; }
 .hero-links svg { width: 16px; height: 16px; }
-.video-section { margin-bottom: 31px; }
-.video-frame { aspect-ratio: 16 / 9; background: #121317; }
-.video-frame iframe { display: block; width: 100%; height: 100%; border: 0; }
-.video-caption { margin-top: 12px; font-size: 13px; color: var(--muted); text-align: center; }
-.video-caption > span { margin-inline: 5px; }
+.overview { width: min(1100px, calc(100% - 48px)); margin-block: 8px 32px; }
+.overview-panels { display: grid; grid-template-columns: 3.7fr 7.8fr 7.2fr; gap: 28px; }
+.overview-step { min-width: 0; text-align: center; }
+.overview-step h2 { margin-bottom: 16px; font-size: 19px; line-height: 1.4; letter-spacing: -.3px; }
+.overview-step h2 span { color: var(--muted); font-size: 14px; font-weight: 400; margin-right: 5px; }
+.overview-art { position: relative; }
+.overview-art a, .overview-art img { display: block; width: 100%; }
+.overview-step:not(:last-child) .overview-art::after { content: '→'; position: absolute; top: 50%; right: -24px; width: 20px; color: var(--muted); font-size: 22px; transform: translateY(-50%); }
+.overview-step > p { margin-top: 12px; font-size: 14px; line-height: 1.6; }
+.overview figcaption { max-width: 950px; margin: 24px auto 0; }
+.overview-note { display: block; font-size: 13px; }
+.photo-credits { display: block; margin-top: 8px; font-size: 11px; line-height: 1.7; }
+.photo-credits a { color: inherit; }
 
 .section { padding-block: 42px; }
 .section-intro { margin-top: 20px; font-size: 16px; line-height: 1.7; }
@@ -114,6 +122,14 @@ figcaption { margin-top: 16px; color: var(--muted); font-size: 14px; line-height
   h1 { max-width: 810px; font-size: 38px; letter-spacing: -1px; }
   .desktop-break { display: none; }
 }
+@media (max-width: 760px) {
+  .overview { max-width: 460px; }
+  .overview-panels { grid-template-columns: 1fr; gap: 28px; }
+  .overview-step h2 { margin-bottom: 12px; }
+  .overview-launch .overview-art { width: min(180px, 60%); margin-inline: auto; }
+  .overview-step:not(:last-child) .overview-art::after { content: none; }
+  .overview-step > p { max-width: 360px; margin-inline: auto; }
+}
 @media (max-width: 600px) {
   .reading-width, .content-width { width: calc(100% - 36px); }
   .hero { padding: 32px 18px 23px; }
@@ -122,8 +138,7 @@ figcaption { margin-top: 16px; color: var(--muted); font-size: 14px; line-height
   .affiliation { font-size: 14px; }
   .hero-links { margin-top: 19px; gap: 7px; }
   .hero-links a { min-height: 40px; font-size: 14px; padding: 8px 13px; }
-  .video-caption { font-size: 12px; }
-  .video-section { margin-bottom: 26px; }
+  .overview { margin-bottom: 26px; }
   .validation-table { table-layout: fixed; font-size: 12px; }
   .validation-table thead th { font-size: 11px; }
   .validation-table th, .validation-table td { padding: 10px 8px; }

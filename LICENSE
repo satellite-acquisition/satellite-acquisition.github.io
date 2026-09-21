@@ -20,3 +20,21 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+
+Third-party photographs
+
+The MIT license above does not apply to photographs used in the headline
+figure. Their original source terms remain in effect:
+
+- assets/figures/headline-launch.webp: "Sentinel-6 Mission" by SpaceX,
+  cropped from https://www.flickr.com/photos/spacex/50631643917/ via
+  https://spaceflightnow.com/2020/11/29/photos-falcon-9-launches-and-lands-at-vandenberg-air-force-base/
+  Licensed under CC BY-NC 2.0: https://creativecommons.org/licenses/by-nc/2.0/
+- assets/figures/headline-uncertainty.webp: NASA image ISS051-E-043291,
+  cropped, clipped, and composited with schematic vector artwork.
+  https://commons.wikimedia.org/wiki/File:ISS-51_CubeSat_deployment_-_A_pair_of_CubeSats.jpg
+  Public domain in the United States.
+- assets/figures/headline-acquisition.webp: NASA, Deep Space Station 14,
+  fitted to the panel with schematic vector overlays.
+  https://www.nasa.gov/image-detail/goldstone-dss14-01/
+  NASA media usage guidelines: https://www.nasa.gov/nasa-brand-center/images-and-media/
