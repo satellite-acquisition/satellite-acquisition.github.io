@@ -41,8 +41,9 @@ h1 { max-width: 1140px; margin: 0 auto 24px; color: var(--ink); font-size: 44px;
 .authors sup, .affiliation sup { color: var(--muted); font-size: .65em; margin-left: 2px; }
 .affiliation { display: flex; flex-wrap: wrap; justify-content: center; gap: 4px 22px; font-size: 14px; margin-top: 12px; line-height: 1.6; }
 .hero-links { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-top: 21px; }
-.hero-links a { display: inline-flex; align-items: center; justify-content: center; gap: 7px; min-height: 40px; padding: 8px 18px; border-radius: 999px; color: #fff; background: #363636; font-size: 15px; line-height: 1.4; text-decoration: none; }
+.hero-links a, .hero-links button { display: inline-flex; align-items: center; justify-content: center; gap: 7px; min-height: 40px; padding: 8px 18px; border: 0; border-radius: 999px; color: #fff; background: #363636; font-size: 15px; line-height: 1.4; text-decoration: none; }
 .hero-links a:hover { background: #202020; color: #fff; }
+.hero-links button:disabled { background: #707070; opacity: 1; cursor: default; }
 .hero-links svg { width: 16px; height: 16px; }
 .overview { width: min(1100px, calc(100% - 48px)); margin-block: 8px 32px; }
 .overview-panels { display: grid; grid-template-columns: 3.7fr 7.8fr 7.2fr; gap: 28px; }
@@ -137,7 +138,7 @@ figcaption { margin-top: 16px; color: var(--muted); font-size: 14px; line-height
   .authors { max-width: 400px; margin-inline: auto; font-size: 18px; }
   .affiliation { font-size: 14px; }
   .hero-links { margin-top: 19px; gap: 7px; }
-  .hero-links a { min-height: 40px; font-size: 14px; padding: 8px 13px; }
+  .hero-links a, .hero-links button { min-height: 40px; font-size: 14px; padding: 8px 13px; }
   .overview { margin-bottom: 26px; }
   .validation-table { table-layout: fixed; font-size: 12px; }
   .validation-table thead th { font-size: 11px; }
@@ -157,7 +158,7 @@ figcaption { margin-top: 16px; color: var(--muted); font-size: 14px; line-height
 }
 @media (max-width: 370px) {
   h1 { font-size: 27px; }
-  .hero-links a { padding-inline: 11px; }
+  .hero-links a, .hero-links button { padding-inline: 11px; }
 }
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }

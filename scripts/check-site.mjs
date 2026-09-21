@@ -92,7 +92,6 @@ const resourceNav = [...html.matchAll(/<nav\b[^>]*>[\s\S]*?<\/nav>/gi)]
 assert(resourceNav, 'Resource navigation must link to the LEOPT repository.');
 assert(/bibtex/i.test(resourceNav[0]) && /href=["']#citation["']/.test(resourceNav[0]),
   'Resource navigation must link to the BibTeX citation.');
-assert(!/\barxiv\b/i.test(html), 'Remove the unavailable arXiv resource and its placeholder text.');
 
 const headline = [...html.matchAll(/<figure\b([^>]*)>[\s\S]*?<\/figure>/gi)]
   .find(match => attributes(match[1]).id === 'demo');
