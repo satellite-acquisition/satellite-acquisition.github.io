@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#ffffff">
-  <meta name="description" content="Bayesian Search MPC for Spacecraft Acquisition Under Orbital Uncertainty. Research from Stanford University and Kayhan Space, with single-spacecraft and fleet results and the LEOPT console.">
+  <meta name="description" content="Bayesian Continuation MPC for Spacecraft Acquisition Under Orbital Uncertainty. Research from Stanford University and Kayhan Space, with single-spacecraft and fleet results and the LEOPT console.">
   <meta property="og:type" content="website">
   <meta property="og:title" content="Spacecraft Acquisition">
   <meta property="og:description" content="Planning antenna searches to find spacecraft after launch. Paper, single-spacecraft and fleet results, and open-source software.">
@@ -24,8 +24,8 @@
   <a class="skip-link" href="#main">Skip to content</a>
   <main id="main">
     <header class="hero">
-      <h1>Bayesian Search MPC for Spacecraft Acquisition<br class="desktop-break"> Under Orbital Uncertainty</h1>
-      <p class="authors"><span>Carlo Schreiber<sup>1</sup>,</span> <span>Duncan Eddy<sup>1</sup>,</span> <span>Mahdi Al-Husseini<sup>1</sup>,</span> <span>Derek Woods<sup>2</sup>,</span> <span>Araz Feyzi<sup>2</sup>,</span> <span>Mykel Kochenderfer<sup>1</sup></span></p>
+      <h1>Bayesian Continuation MPC for Spacecraft Acquisition<br class="desktop-break"> Under Orbital Uncertainty</h1>
+      <p class="authors"><span>Carlo Schreiber<sup>1</sup>,</span> <span>Duncan Eddy<sup>1</sup>,</span> <span>Mahdi Al-Husseini<sup>1</sup>,</span> <span>Derek Woods<sup>2</sup>,</span> <span>Araz Feyzi<sup>2</sup>,</span> <span>Mykel J. Kochenderfer<sup>1</sup></span></p>
       <p class="affiliation"><span><sup>1</sup> Stanford University</span><span><sup>2</sup> Kayhan Space</span></p>
       <nav class="hero-links" aria-label="Research resources">
         <button type="button" disabled aria-label="arXiv paper, link not yet available">
@@ -82,7 +82,7 @@
     <section class="abstract-section" id="abstract" aria-labelledby="abstract-title">
       <div class="reading-width">
         <h2 id="abstract-title">Abstract</h2>
-        <p class="section-intro">After launch, uncertainty in a spacecraft’s orbit can place its signal outside a ground station’s antenna beam. The station must search before it can receive telemetry or send commands. Our method, Bayesian Search Model Predictive Control (BS-MPC), uses missed detections to revise where the spacecraft is likely to be and choose where to point next. It accounts for how quickly the antenna can move and how much time remains to search. We test the method during individual contacts and across 100-spacecraft deployments. In the single-contact simulations, BS-MPC acquires 90.2% of assigned targets, compared with 83.3% for a tube sweep. Average search time falls from 89.8 to 78.3 seconds, counting unsuccessful attempts at the full 192-second duration.</p>
+        <p class="section-intro">After launch, uncertainty in a spacecraft’s orbit can place its signal outside a ground station’s antenna beam. The station must search before it can receive telemetry or send commands. Our method, Bayesian Continuation Model Predictive Control (BC-MPC), uses missed detections to revise where the spacecraft is likely to be and choose where to point next. It accounts for how quickly the antenna can move and how much time remains to search. We test the method during individual contacts and across 100-spacecraft deployments. In the single-contact simulations, BC-MPC acquires 90.2% of assigned targets, compared with 83.3% for an Along-Track Uncertainty Sweep (ATUS). Average search time falls from 89.8 to 78.3 seconds, counting unsuccessful attempts at the full 192-second duration. A replay using operational orbit products for 83 spacecraft from Transporter-16 also improves modeled acquisition by approximately 12 percentage points over ATUS under a common assumed uncertainty model.</p>
       </div>
     </section>
 
@@ -101,9 +101,9 @@
 
     <section class="method-section section" id="method" aria-labelledby="method-title">
       <div class="reading-width">
-        <h2 id="method-title">Bayesian search MPC</h2>
+        <h2 id="method-title">Bayesian continuation MPC</h2>
         <p class="section-intro">The controller tracks several possible orbits and how likely each one is. After a missed detection, it gives less weight to orbits where it expected to receive a signal. The next pointing depends on this revised estimate and on where the antenna can move, settle, and observe in the time available.</p>
-        <p class="section-intro">BS-MPC starts with a sweep along the predicted track that the antenna can carry out. It tries changes to the next four pointings while keeping the later schedule. A change is accepted only when the antenna can return to that schedule and the model predicts a better chance of finding the spacecraft before the contact ends. The controller repeats this process after each miss.</p>
+        <p class="section-intro">BC-MPC starts with a sweep along the predicted track that the antenna can carry out. It tries changes to the next four pointings while keeping the later schedule. A change is accepted only when the antenna can return to that schedule and the model predicts a better chance of finding the spacecraft before the contact ends. The controller repeats this process after each miss.</p>
       </div>
     </section>
 
@@ -119,37 +119,35 @@
           <p class="section-intro">Each trial gives a ground station 192 seconds to acquire one spacecraft. We compare controllers on the same 2,773 reserved contacts across 96 simulated deployments. The simulated orbit errors follow the distribution assumed by the controller, and the antenna has limits on its speed and acceleration.</p>
           <figure class="paper-figure results-figure">
             <a href="assets/figures/deployment-results.png" target="_blank" rel="noopener noreferrer" aria-label="Open the acquisition results figure at full resolution">
-              <img src="assets/figures/deployment-results.png" alt="Acquisition probability over 192 seconds: BS-MPC reaches 90.2%, tube sweep 83.3%, Bayesian greedy 68.8%, and sky raster 32.9%." width="1020" height="870" loading="lazy" decoding="async">
+              <img src="assets/figures/deployment-results.png" alt="Acquisition probability over 192 seconds: BC-MPC reaches 90.2%, ATUS 83.3%, Bayesian greedy 68.8%, and uniform grid 32.9%." width="1600" height="1365" loading="lazy" decoding="async">
             </a>
-            <figcaption>Probability of acquisition during the first contact. Bayesian greedy is ahead of BS-MPC at 60 seconds; BS-MPC acquires more targets by the end of the contact.</figcaption>
+            <figcaption>Probability of acquisition during the first contact. Bayesian greedy is ahead of BC-MPC at 60 seconds; BC-MPC acquires more targets by the end of the contact.</figcaption>
           </figure>
           <div class="table-scroll" role="region" aria-label="Simulated acquisition results" tabindex="0">
             <table class="validation-table results-table">
               <caption>First-contact results</caption>
-              <thead><tr><th scope="col">Controller</th><th scope="col">Acquired by 60 s (%)</th><th scope="col">Acquired by 192 s (%)</th><th scope="col">Mean time (s)</th></tr></thead>
+              <thead><tr><th scope="col">Controller</th><th scope="col">Acquired by 60 s (%)</th><th scope="col">Acquired by 192 s (%)</th><th scope="col">RMST (s)</th></tr></thead>
               <tbody>
-                <tr><th scope="row">Sky raster</th><td>24.8</td><td>32.9</td><td>141.9</td></tr>
-                <tr><th scope="row">Tube sweep</th><td>37.6</td><td>83.3</td><td>89.8</td></tr>
-                <tr><th scope="row">Prior-ranked sweep</th><td>36.7</td><td>59.2</td><td>108.5</td></tr>
-                <tr><th scope="row">Frozen-prior greedy</th><td>39.4</td><td>50.8</td><td>118.5</td></tr>
+                <tr><th scope="row">Uniform grid</th><td>24.8</td><td>32.9</td><td>141.9</td></tr>
+                <tr><th scope="row">ATUS</th><td>37.6</td><td>83.3</td><td>89.8</td></tr>
                 <tr><th scope="row">Bayesian greedy</th><td>56.5</td><td>68.8</td><td>86.5</td></tr>
                 <tr><th scope="row">MPC, no continuation</th><td>61.4</td><td>79.0</td><td>74.5</td></tr>
-                <tr class="proposed-policy"><th scope="row">BS-MPC</th><td>42.3</td><td>90.2</td><td>78.3</td></tr>
+                <tr class="proposed-policy"><th scope="row">BC-MPC</th><td>42.3</td><td>90.2</td><td>78.3</td></tr>
               </tbody>
             </table>
           </div>
-          <p class="source-note">Probabilities are conditional on receiving a reserved contact. Mean time is restricted to 192 seconds, with unsuccessful attempts contributing the full duration. The antenna rate and acceleration limits are 1.10 deg/s and 1.00 deg/s².</p>
+          <p class="source-note">Probabilities are conditional on receiving a reserved contact. Restricted mean acquisition time (RMST) is capped at 192 seconds, with unsuccessful attempts contributing the full duration. The antenna rate and acceleration limits are 1.10 deg/s and 1.00 deg/s².</p>
         </section>
         <section class="results-panel" id="fleet" aria-labelledby="fleet-title">
           <h3 id="fleet-title">Fleet acquisition</h3>
-          <p class="section-intro">We simulate four deployments of 100 spacecraft and measure the fraction acquired within 24 hours. The network grows from one to 32 sites, with four independently steerable antennas at each site and up to five attempts per spacecraft.</p>
+          <p class="section-intro">We simulate four deployments of 100 spacecraft and measure the fraction acquired within 24 hours. The network grows from one to 24 sites, with four independently steerable antennas at each site.</p>
           <figure class="paper-figure results-figure">
             <a href="assets/figures/fleet-network.png" target="_blank" rel="noopener noreferrer" aria-label="Open the fleet acquisition figure at full resolution">
-              <img src="assets/figures/fleet-network.png" alt="Expected fleet fraction acquired within 24 hours as the network grows from one to 32 sites, each with four antennas. At six sites, BS-MPC reaches 93.2% and tube sweep reaches 88.1%." width="1020" height="1020" loading="lazy" decoding="async">
+              <img src="assets/figures/fleet-network.png" alt="Expected fleet fraction acquired within 24 hours as the network grows from one to 24 sites, each with four antennas. At six sites, BC-MPC reaches 94.2% and ATUS reaches 89.5%." width="1600" height="1600" loading="lazy" decoding="async">
             </a>
-            <figcaption>Expected fraction of the fleet acquired within 24 hours. Every spacecraft is included in the denominator, including those without a reserved contact.</figcaption>
+            <figcaption>Expected fraction of the fleet acquired within 24 hours; whiskers show the minimum and maximum across four deployments. Every spacecraft is included in the denominator, including those without a reserved contact.</figcaption>
           </figure>
-          <p class="section-intro">With six sites, BS-MPC acquires an expected 93.2% of the fleet, compared with 88.1% for tube sweep. At 32 sites, the figures are 98.6% and 97.7%. Both controllers use the same contact allocation; bookings left unused after an acquisition are not reassigned.</p>
+          <p class="section-intro">With six sites, BC-MPC acquires an expected 94.2% of the fleet, compared with 89.5% for ATUS. At 24 sites, the figures are 99.2% and 99.1%. Both controllers use the same contact allocation; bookings left unused after an acquisition are not reassigned.</p>
           <p class="source-note">These four deployments are separate from the single-spacecraft study. Sites are added in a fixed geographic order. The result is an expected acquired fraction, not the probability of acquiring every spacecraft.</p>
         </section>
       </div>
@@ -157,37 +155,39 @@
 
     <section class="validation-section section" id="validation" aria-labelledby="validation-title">
       <div class="reading-width">
-        <h2 id="validation-title">Real-world validation</h2>
-        <p class="section-intro">We plan to evaluate the searches using Kayhan Space LEOP records, with orbit uncertainty and receiver settings derived from mission data. Calibration and evaluation will use separate deployments.</p>
-        <p class="validation-status">Results pending. <span class="pending-value">XX</span> marks values awaiting validation.</p>
-        <div class="table-scroll" role="region" aria-label="Kayhan evaluation cohort" tabindex="0">
-          <table class="validation-table cohort-table">
-            <caption>Kayhan Space evaluation cohort</caption>
-            <thead><tr><th scope="col">Deployments</th><th scope="col">Acquisition attempts</th><th scope="col">Ground stations</th></tr></thead>
-            <tbody><tr><td>XX</td><td>XX</td><td>XX</td></tr></tbody>
-          </table>
-        </div>
-        <div class="table-scroll" role="region" aria-label="Kayhan acquisition policy comparison" tabindex="0">
+        <h2 id="validation-title">Kayhan Space LEOP replay</h2>
+        <p class="section-intro">We evaluate searches using operational orbit products supplied by Kayhan Space for 83 spacecraft from the Transporter-16 rideshare launch. Controllers plan with either pre-deployment or post-deployment ephemeris. The first cataloged two-line element set (TLE) serves only as an approximate retrospective trajectory reference and is unavailable to the controllers.</p>
+        <p class="section-intro">BC-MPC improves modeled acquisition over ATUS by 12.04 percentage points with pre-deployment inputs and 12.46 percentage points with post-deployment inputs. Both cases use the same six illustrative ground stations and a 192-second search window.</p>
+        <div class="table-scroll" role="region" aria-label="Pre-deployment ephemeris replay results" tabindex="0">
           <table class="validation-table">
-            <caption>Planned comparison using Kayhan Space records</caption>
-            <thead><tr><th scope="col">Search policy</th><th scope="col">Acquisition probability (%)</th><th scope="col">Restricted mean acquisition time (s)</th></tr></thead>
+            <caption>Planning input: pre-deployment ephemeris</caption>
+            <thead><tr><th scope="col">Controller</th><th scope="col">Modeled acquisition (%)</th><th scope="col">RMST (s)</th></tr></thead>
             <tbody>
-              <tr><th scope="row">Recorded pointing</th><td>XX</td><td>XX</td></tr>
-              <tr><th scope="row">Tube sweep</th><td>XX</td><td>XX</td></tr>
-              <tr><th scope="row">Bayesian greedy</th><td>XX</td><td>XX</td></tr>
-              <tr><th scope="row">MPC, no continuation</th><td>XX</td><td>XX</td></tr>
-              <tr class="proposed-policy"><th scope="row">BS-MPC</th><td>XX</td><td>XX</td></tr>
+              <tr><th scope="row">Nominal tracking</th><td>4.96</td><td>184.24</td></tr>
+              <tr><th scope="row">ATUS</th><td>69.51</td><td>144.05</td></tr>
+              <tr class="proposed-policy"><th scope="row">BC-MPC</th><td>81.55</td><td>139.10</td></tr>
             </tbody>
           </table>
         </div>
-        <p class="source-note">Recorded acquisitions and model estimates for alternative pointings will be reported separately.</p>
+        <div class="table-scroll" role="region" aria-label="Post-deployment ephemeris replay results" tabindex="0">
+          <table class="validation-table">
+            <caption>Planning input: post-deployment ephemeris</caption>
+            <thead><tr><th scope="col">Controller</th><th scope="col">Modeled acquisition (%)</th><th scope="col">RMST (s)</th></tr></thead>
+            <tbody>
+              <tr><th scope="row">Nominal tracking</th><td>6.03</td><td>182.67</td></tr>
+              <tr><th scope="row">ATUS</th><td>68.78</td><td>144.42</td></tr>
+              <tr class="proposed-policy"><th scope="row">BC-MPC</th><td>81.24</td><td>139.16</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="source-note">These are modeled search outcomes using operational orbit products, not measured acquisition rates or a replay of recorded antenna pointing. Both planning cases use a common assumed uncertainty model with a 20-second phase standard deviation. The first-catalog TLE is an approximate reference, not exact trajectory truth. RMST counts unsuccessful attempts at the full 192-second duration.</p>
       </div>
     </section>
 
     <section class="software-section section" id="software" aria-labelledby="software-title">
       <div class="reading-width">
         <h2 id="software-title">Explore the solver</h2>
-        <p class="section-intro">LEOPT provides the search solvers and acquisition console under an MIT license. The browser demo includes BS-MPC and the six comparison methods from the paper. You can edit the sample mission, choose a controller, and step through the search.</p>
+        <p class="section-intro">LEOPT provides the search solvers and acquisition console under an MIT license. The browser demo includes BC-MPC, the paper’s comparison methods, and two additional baselines. You can edit the sample mission, choose a controller, and step through the search.</p>
         <div class="software-links">
           <a class="text-link" href="https://github.com/satellite-acquisition/leopt" target="_blank" rel="noopener noreferrer">Get the code <span aria-hidden="true">↗</span></a>
           <a class="console-launch-link" id="launch-console" href="console/index.html" target="_blank" rel="noopener noreferrer" aria-label="Launch the LEOPT console in a new window">Launch console <span aria-hidden="true">↗</span></a>
@@ -208,12 +208,12 @@
           </button>
         </div>
         <p class="citation-note">Research manuscript</p>
-        <pre class="citation-code" tabindex="0" aria-label="BibTeX citation"><code id="bibtex">@unpublished{schreiber2026bayesiansearch,
-  title  = {Bayesian Search {MPC} for Spacecraft Acquisition
+        <pre class="citation-code" tabindex="0" aria-label="BibTeX citation"><code id="bibtex">@unpublished{schreiber2026bayesiancontinuation,
+  title  = {Bayesian Continuation {MPC} for Spacecraft Acquisition
             Under Orbital Uncertainty},
   author = {Schreiber, Carlo and Eddy, Duncan and
             Al-Husseini, Mahdi and Woods, Derek and
-            Feyzi, Araz and Kochenderfer, Mykel},
+            Feyzi, Araz and Kochenderfer, Mykel J.},
   year   = {2026},
   note   = {Research manuscript},
   url    = {https://satellite-acquisition.github.io/}

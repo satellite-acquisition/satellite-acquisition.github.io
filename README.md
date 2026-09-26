@@ -1,6 +1,6 @@
 # LEOPT project website
 
-Paper and project page for Bayesian Search MPC for Spacecraft Acquisition Under
+Paper and project page for Bayesian Continuation MPC for Spacecraft Acquisition Under
 Orbital Uncertainty. Project URL: <https://satellite-acquisition.github.io>.
 
 ```bash
@@ -8,8 +8,14 @@ python3 -m http.server 8080
 ```
 
 Open <http://localhost:8080>. Edit `index.html` for paper links, citation, and
-content; `styles.css` controls the layout. Kayhan validation results remain `XX`
-until measured results are available.
+content; `styles.css` controls the layout. The paper content, result tables, and
+result plots are synchronized from `../leopt-search-1/output/overleaf/`. Kayhan
+results describe modeled acquisition using operational orbit products, not
+measured acquisition rates. The browser solver retains its internal policy IDs.
+
+The single-spacecraft and fleet PNGs are rendered directly from
+`figures/fig_deployment_results.pdf` and `figures/fig_fleet_network.pdf` in that
+Overleaf bundle using `pdftoppm -singlefile -scale-to 1600 -png`.
 
 The uncertainty figure can be rebuilt with `python3 scripts/render-uncertainty.py`
 (requires Matplotlib). Its source coordinates and provenance are in
@@ -28,8 +34,8 @@ This requires pdfLaTeX with TikZ, Poppler, and `cwebp`. The website layout is in
 
 **Launch console** opens `console/` in a separate window, with the dark theme
 and LEOPT intro animation. Edit the mission, then select **Roll out**.
-The JavaScript solvers implement BS-MPC, MPC without continuation, Bayesian
-greedy, frozen-prior greedy, prior-ranked sweep, tube sweep, and sky raster.
+The JavaScript solvers implement BC-MPC, MPC without continuation, Bayesian
+greedy, frozen-prior greedy, prior-ranked sweep, ATUS, and uniform grid.
 The demo uses circular orbits, a two-dimensional angular detection model,
 and rate- and acceleration-limited motion. Each contact has up to 32 six-second
 stages; MPC uses a four-dwell horizon and 40 retained prefixes. Plans follow

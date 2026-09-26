@@ -3,9 +3,9 @@
 // Browser simulation adapted from the LEOPT acquisition console (MIT).
 // The browser example uses circular geometry and the paper's search policies.
 const policyLabels = {
-  bs_mpc: 'BS-MPC', bayes_mpc: 'MPC, no continuation', bayes_greedy: 'Bayesian greedy',
+  bs_mpc: 'BC-MPC', bayes_mpc: 'MPC, no continuation', bayes_greedy: 'Bayesian greedy',
   frozen_greedy: 'Frozen-prior greedy', probability_ordered: 'Prior-ranked sweep',
-  tube_uniform: 'Tube sweep', sky_raster: 'Sky raster'
+  tube_uniform: 'ATUS', sky_raster: 'Uniform grid'
 };
 
 class LeoptConsole extends React.Component {
