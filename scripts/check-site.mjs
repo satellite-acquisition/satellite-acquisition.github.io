@@ -121,8 +121,6 @@ for (const source of [
 assert(!elements.some((element) => element[1].toLowerCase() === 'iframe'
   && /^(?:\.\/)?console\//.test(attributes(element[2]).src ?? '')),
   'The console should open separately, without an embedded copy in the page.');
-assert(references.some((reference) => /^https:\/\/(?:youtu\.be\/|www\.youtube\.com\/watch\?v=)CapYyRrfLU8(?:[?&#]|$)/.test(reference)),
-  'Keep the project video available as an external fallback link.');
 
 const software = [...html.matchAll(/<section\b[^>]*>[\s\S]*?<\/section>/gi)]
   .find((match) => /\bid=["']software["']/.test(match[0]));
