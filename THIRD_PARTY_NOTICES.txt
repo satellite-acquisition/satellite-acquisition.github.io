@@ -1,6 +1,10 @@
+Third-party notices
+
+Website styling adapted from https://github.com/spar-mpc/spar-mpc.github.io.
+The following notice applies to that third-party material.
+
 MIT License
 
-Copyright (c) 2026 Carlo Schreiber
 Copyright (c) 2026 SPAR-MPC contributors
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -23,8 +27,7 @@ SOFTWARE.
 
 Third-party photographs
 
-The MIT license above does not apply to photographs used in the headline
-figure. Their original source terms remain in effect:
+Original source terms apply to the photographs used in the headline figure:
 
 - assets/figures/headline-launch.webp: "Sentinel-6 Mission" by SpaceX,
   cropped from https://www.flickr.com/photos/spacex/50631643917/ via

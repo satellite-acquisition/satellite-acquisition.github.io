@@ -1,63 +1,12 @@
-# LEOPT project website
+# Spacecraft Acquisition
 
-Paper and project page for Bayesian Continuation MPC for Spacecraft Acquisition Under
-Orbital Uncertainty. Project URL: <https://satellite-acquisition.github.io>.
+Project website: https://satellite-acquisition.github.io
 
-```bash
+Preview locally:
+
+```sh
 python3 -m http.server 8080
 ```
 
-Open <http://localhost:8080>. Edit `index.html` for paper links, citation, and
-content; `styles.css` controls the layout. The paper content, result tables, and
-result plots are synchronized from `../leopt-search-1/output/overleaf/`. Kayhan
-results describe modeled acquisition using operational orbit products, not
-measured acquisition rates. The browser solver retains its internal policy IDs.
-
-The single-spacecraft and fleet PNGs are rendered directly from
-`figures/fig_deployment_results.pdf` and `figures/fig_fleet_network.pdf` in that
-Overleaf bundle using `pdftoppm -singlefile -scale-to 1600 -png`.
-
-The uncertainty figure can be rebuilt with `python3 scripts/render-uncertainty.py`
-(requires Matplotlib). Its source coordinates and provenance are in
-`assets/figures/uncertainty-data.json`.
-
-The opening figure adapts revision 19 of the paper's headline artwork into
-three responsive panels. Photo credits and source terms appear below it and
-in `LICENSE`. To rebuild the WebP images from the original photo folder:
-
-```bash
-python3 scripts/render-headline.py ../leopt-search-1/paper/figures/headline
-```
-
-This requires pdfLaTeX with TikZ, Poppler, and `cwebp`. The website layout is in
-`scripts/headline-web.tex`; the paper's source files are left unchanged.
-
-**Launch console** opens `console/` in a separate window, with the dark theme
-and LEOPT intro animation. Edit the mission, then select **Roll out**.
-The JavaScript solvers implement BC-MPC, MPC without continuation, Bayesian
-greedy, frozen-prior greedy, prior-ranked sweep, ATUS, and uniform grid.
-The demo uses circular orbits, a two-dimensional angular detection model,
-and rate- and acceleration-limited motion. Each contact has up to 32 six-second
-stages; MPC uses a four-dwell horizon and 40 retained prefixes. Plans follow
-the all-miss branch until a simulated confirmation ends the search.
-The globe and entropy plot show the along-track marginal. That belief carries
-between contacts; the cross-track prior is initialized anew for each contact.
-
-This reduced example does not reproduce the SGP4 paper experiments or export
-operational schedules. Run the full application from the
-[LEOPT repository](https://github.com/satellite-acquisition/leopt).
-
-```bash
-node --check site.js
-node scripts/check-site.mjs
-node scripts/check-console.mjs
-node scripts/check-solvers.mjs
-```
-
-GitHub Actions checks the site and deploys `main` to GitHub Pages. Select
-**GitHub Actions** as the Pages source in the repository settings.
-
-LEOPT is a separate research project from SPAR-MPC. Only the website styling
-draws on the [SPAR-MPC project website](https://github.com/spar-mpc/spar-mpc.github.io);
-its MIT notice is retained in [LICENSE](LICENSE). The paper, methods, figures,
-results, and solver code are from LEOPT.
+Open http://localhost:8080. Edit `index.html` for content and `styles.css` for styling.
+GitHub Actions deploys `main` to GitHub Pages.

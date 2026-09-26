@@ -50,7 +50,7 @@ jobs:
       - name: Collect public files
         run: |
           mkdir _site
-          cp index.html styles.css site.js .nojekyll LICENSE _site/
+          cp index.html styles.css site.js .nojekyll THIRD_PARTY_NOTICES.txt _site/
           cp -R assets _site/assets
           cp -R console _site/console
       - uses: actions/upload-pages-artifact@v3
