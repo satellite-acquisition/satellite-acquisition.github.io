@@ -4,10 +4,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#ffffff">
-  <meta name="description" content="Bayesian Continuation MPC for Spacecraft Acquisition Under Orbital Uncertainty. Research from Stanford University and Kayhan Space, with single-spacecraft and fleet results and the LEOPT console.">
+  <meta name="description" content="Optimal Search for Finding Satellites Post-Launch. Bayesian Continuation Model Predictive Control (BC-MPC) for antenna pointing after launch, from Stanford University and Kayhan Space, with single-spacecraft, fleet, and Transporter-16 results and the LEOPT console.">
   <meta property="og:type" content="website">
-  <meta property="og:title" content="Spacecraft Acquisition">
-  <meta property="og:description" content="Planning antenna searches to find spacecraft after launch. Paper, single-spacecraft and fleet results, and open-source software.">
+  <meta property="og:title" content="Optimal Search for Finding Satellites Post-Launch">
+  <meta property="og:description" content="Bayesian Continuation MPC replans antenna pointings after missed detections to find and establish contact with spacecraft immediately after launch.">
   <meta property="og:url" content="https://satellite-acquisition.github.io/">
   <meta property="og:image" content="https://satellite-acquisition.github.io/assets/leopt-logo.png">
   <meta name="twitter:card" content="summary_large_image">
@@ -18,13 +18,13 @@
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
   <script src="site.js" defer></script>
-  <title>Spacecraft Acquisition</title>
+  <title>Optimal Search for Finding Satellites Post-Launch</title>
 </head>
 <body>
   <a class="skip-link" href="#main">Skip to content</a>
   <main id="main">
     <header class="hero">
-      <h1>Bayesian Continuation MPC for Spacecraft Acquisition<br class="desktop-break"> Under Orbital Uncertainty</h1>
+      <h1>Optimal Search for Finding Satellites<br class="desktop-break"> Post-Launch</h1>
       <p class="authors"><span>Carlo Schreiber<sup>1</sup>,</span> <span>Duncan Eddy<sup>1</sup>,</span> <span>Mahdi Al-Husseini<sup>1</sup>,</span> <span>Derek Woods<sup>2</sup>,</span> <span>Araz Feyzi<sup>2</sup>,</span> <span>Mykel J. Kochenderfer<sup>1</sup></span></p>
       <p class="affiliation"><span><sup>1</sup> Stanford University</span><span><sup>2</sup> Kayhan Space</span></p>
       <nav class="hero-links" aria-label="Research resources">
@@ -46,35 +46,35 @@
     <figure class="overview content-width" id="demo" aria-label="Launch, orbital uncertainty, and ground acquisition">
       <div class="overview-panels">
         <div class="overview-step overview-launch">
-          <h2><span>1</span> Launch</h2>
+          <h2><span>1</span> Launch / Release</h2>
           <div class="overview-art">
             <a href="assets/figures/headline-launch.webp" target="_blank" rel="noopener noreferrer" aria-label="Open the launch panel at full resolution">
               <img src="assets/figures/headline-launch.webp" alt="A Falcon 9 rocket lifting off." width="525" height="865" fetchpriority="high" decoding="async">
             </a>
           </div>
-          <p>Deployment into orbit.</p>
+          <p>Deployment into the target orbit.</p>
         </div>
         <div class="overview-step">
-          <h2><span>2</span> Orbital uncertainty</h2>
+          <h2><span>2</span> Post-release uncertainty</h2>
           <div class="overview-art">
             <a href="assets/figures/headline-uncertainty.webp" target="_blank" rel="noopener noreferrer" aria-label="Open the orbital uncertainty panel at full resolution">
               <img src="assets/figures/headline-uncertainty.webp" alt="Possible positions of one spacecraft spread along its estimated orbit above Earth; faint copies show the uncertainty." width="1106" height="865" decoding="async">
             </a>
           </div>
-          <p>An orbit estimate leaves many possible positions for one spacecraft.</p>
+          <p>Post-release state uncertainty from injection errors and perturbations.</p>
         </div>
         <div class="overview-step">
-          <h2><span>3</span> Acquisition</h2>
+          <h2><span>3</span> Ground-based acquisition</h2>
           <div class="overview-art">
             <a href="assets/figures/headline-acquisition.webp" target="_blank" rel="noopener noreferrer" aria-label="Open the acquisition panel at full resolution">
               <img src="assets/figures/headline-acquisition.webp" alt="A ground antenna points a receive beam toward a cloud of possible spacecraft positions along an orbit." width="1021" height="865" decoding="async">
             </a>
           </div>
-          <p>The antenna slews, settles, and listens for the signal.</p>
+          <p>Search actions choose where to point; the antenna slews, settles, and listens.</p>
         </div>
       </div>
       <figcaption>
-        <span class="overview-note">Spacecraft copies and particles represent possible states of one target. Photographs are illustrative; uncertainty and beam overlays are schematic.</span>
+        <span class="overview-note">Satellite launch and initial acquisition problem: An orbit parameter message provides an initial orbit state estimate. Operators must then command antenna pointing offsets, followed by slewing, settling, and listening to search for the spacecraft.</span>
         <span class="photo-credits">Photos: <a href="https://www.flickr.com/photos/spacex/50631643917/" target="_blank" rel="noopener noreferrer">SpaceX, “Sentinel-6 Mission”</a> (<a href="https://creativecommons.org/licenses/by-nc/2.0/" target="_blank" rel="noopener noreferrer">CC BY-NC 2.0</a>; cropped), via <a href="https://spaceflightnow.com/2020/11/29/photos-falcon-9-launches-and-lands-at-vandenberg-air-force-base/" target="_blank" rel="noopener noreferrer">Spaceflight Now</a>; <a href="https://commons.wikimedia.org/wiki/File:ISS-51_CubeSat_deployment_-_A_pair_of_CubeSats.jpg" target="_blank" rel="noopener noreferrer">NASA via Wikimedia Commons</a> (CubeSat and Earth); <a href="https://www.nasa.gov/image-detail/goldstone-dss14-01/" target="_blank" rel="noopener noreferrer">NASA</a> (antenna).</span>
       </figcaption>
     </figure>
@@ -82,28 +82,68 @@
     <section class="abstract-section" id="abstract" aria-labelledby="abstract-title">
       <div class="reading-width">
         <h2 id="abstract-title">Abstract</h2>
-        <p class="section-intro">This paper introduces Bayesian Continuation Model Predictive Control (BC-MPC), an adaptive method for finding and establishing contact with spacecraft immediately after launch when their true positions are most uncertain. Launch and deployment errors can leave a spacecraft sufficiently far from its predicted position that operators must actively search during ground contacts. Each missed detection provides information about which orbital hypotheses remain plausible, but searching one part of the uncertainty region can consume the time needed to reach another. BC-MPC updates a particle-based orbital belief after missed detections and replans antenna pointing while retaining a feasible continuation. Across 2,773 attempts from 96 simulated deployments with matched uncertainty, BC-MPC improves acquisition probability over an Along-Track Uncertainty Sweep (ATUS) by 6.9 percentage points and reduces restricted mean acquisition time by 11.5 seconds. We additionally evaluate the method using pre- and post-deployment ephemeris for 83 spacecraft from the Transporter-16 rideshare launch. BC-MPC improves modeled acquisition over ATUS by approximately 12 percentage points under the common assumed uncertainty model.</p>
+        <p class="section-intro">This paper introduces Bayesian Continuation Model Predictive Control (BC-MPC), an adaptive method that replans near-term antenna pointings while continuing a feasible baseline sweep, for finding and establishing contact with spacecraft immediately after launch when their true positions are most uncertain. After separation, launch and deployment errors can leave the spacecraft sufficiently far from its predicted position that operators must actively search for it during ground contacts to establish communications. Each missed detection provides information about which orbital hypotheses remain plausible, but searching one part of the uncertainty region can consume the time needed to reach another. BC-MPC updates a particle-based orbital belief after missed detections and replans antenna pointing guidance while retaining feasibility. Its continuation helps preserve future search coverage that greedy and short-horizon methods can sacrifice for immediate acquisition gains. We compare BC-MPC against the operationally prevalent along-track sweep and additional search algorithms under common search-time budgets, initial uncertainty, and antenna constraints. Across 96 simulated deployments with matched uncertainty, BC-MPC improves acquisition probability over the along-track sweep and reduces restricted mean acquisition time. We additionally evaluate the method using pre-launch, post-launch, and initial acquisition ephemerides for 83 spacecraft from the Transporter-16 rideshare launch. Using either pre-deployment or post-deployment two-line element sets (TLEs) for planning, BC-MPC improves modeled acquisition probability over the along-track sweep by approximately 12 percentage points under the commonly assumed uncertainty model.</p>
       </div>
     </section>
 
     <section class="problem-section section" id="problem" aria-labelledby="problem-title">
       <div class="reading-width">
         <h2 id="problem-title">The problem</h2>
-        <p class="section-intro">Launch and early-orbit operations require operators to establish contact, assess spacecraft health, and transition toward routine communications despite uncertainty in the spacecraft’s position. Launch-vehicle injection errors, deployment dispersion, and atmospheric drag can produce uncertainty that exceeds the antenna beamwidth. Operators must therefore search around the predicted trajectory within limited ground contacts, respecting antenna slew, settling, and receiver timing constraints.</p>
-        <figure class="paper-figure uncertainty-figure">
-          <a href="assets/figures/uncertainty-tube.svg" target="_blank" rel="noopener noreferrer" aria-label="Open the orbital uncertainty figure at full resolution">
-            <img src="assets/figures/uncertainty-tube.svg" alt="A particle belief showing possible spacecraft directions, spread much farther along the track than across it." width="900" height="460" loading="lazy" decoding="async">
-          </a>
-          <figcaption>Each dot is a possible spacecraft direction at one instant during a simulated pass. Uncertainty is much greater along the track than across it.</figcaption>
-        </figure>
+        <p class="section-intro">Launch and early-orbit operations are among the most challenging phases of a spacecraft mission. After launch, the spacecraft may have experienced a fault and operators must establish contact using ground-based antennas to assess spacecraft health and transition toward routine communications despite not knowing its exact position. To make contact with spacecraft, operators rely on pre-launch orbit parameter messages (OPMs) from the launch vehicle provider, which contain the expected deployment state and inform the antenna pointing search strategy. The challenge of this search is exacerbated by uncertainty introduced by launch-vehicle injection errors, ejection-induced dispersion, and orbital perturbations, in particular drag. The resulting uncertainty can exceed the antenna beamwidth, requiring operators to search around the predicted spacecraft location rather than track a single nominal trajectory.</p>
+        <p class="section-intro">This search must be performed under tight operational constraints. Ground contacts are limited, and an antenna can search only one location at a time. The challenge is particularly acute for rideshare launches, when many spacecraft may require acquisition over overlapping passes. Search decisions must therefore use the available ground contact pass time efficiently while respecting antenna slew, settling, and communication timing constraints.</p>
+        <p class="section-intro">Adapting the search involves two important considerations. First, each unsuccessful observation provides information. If the antenna points at a location where a particular orbit hypothesis should have produced a detection, a miss reduces the plausibility of that hypothesis. Second, antenna motion limits which locations remain reachable later in the contact. Moving toward one part of the uncertainty region can consume the time needed to reach another. An adaptive search strategy must therefore use information from missed detections without sacrificing coverage of the remaining uncertainty.</p>
       </div>
     </section>
 
     <section class="method-section section" id="method" aria-labelledby="method-title">
       <div class="reading-width">
         <h2 id="method-title">Bayesian Continuation MPC</h2>
-        <p class="section-intro">BC-MPC maintains a particle-based belief over possible spacecraft trajectories and updates this belief after missed detections. If a pointing should have produced a detection for a particular orbit hypothesis, a miss reduces that hypothesis’s weight. Antenna motion constraints determine which search actions remain reachable later in the contact.</p>
-        <p class="section-intro">Starting from a feasible ATUS schedule, BC-MPC reoptimizes the next four antenna pointings while retaining the continuation beyond the planning horizon. Candidate pointings are evaluated together with this continuation over the full remaining contact window. The complete schedule must satisfy antenna motion constraints, including the transition to the retained continuation. Only the first pointing is executed. After a miss, the belief is updated, the optimized schedule is shifted by one stage, and the optimization is repeated.</p>
+        <h3 class="subsection-title">Operational search strategies</h3>
+        <p class="section-intro">The most direct approach is <em>nominal tracking</em>, which commands the pointing direction predicted by the nominal spacecraft state. When the orbit prediction is sufficiently accurate, nominal tracking can acquire the spacecraft quickly without requiring an explicit search. Nominal tracking is not robust to any errors or uncertainty in the initial position. Therefore a slightly more advanced search strategy is a grid sweep. A uniform grid sweep searches a fixed region around the predicted spacecraft position in both the along-track and cross-track directions, without exploiting the structure of the orbital uncertainty. While this provides broader coverage than nominal tracking, operators may spend substantial time searching locations where the spacecraft is unlikely to be.</p>
+        <p class="section-intro">A better operational approach is an Along-Track Uncertainty Sweep (ATUS). Because post-deployment orbital uncertainty is typically elongated along the direction of motion, ATUS concentrates the search along this dominant uncertainty direction. We define the ATUS policy used here as a fixed, repeating sweep of the propagated prior, subject to antenna motion limits. The candidate directions move with the predicted trajectory. At each step, the antenna selects the reachable candidate closest to the preferred pointing, or makes a partial slew toward it if none is reachable. The sweep advances one index per step; missed detections do not alter its order.</p>
+        <figure class="paper-figure narrow-figure">
+          <a href="assets/figures/belief-geometry.png" target="_blank" rel="noopener noreferrer" aria-label="Open the angular uncertainty figure at full resolution">
+            <img src="assets/figures/belief-geometry.png" alt="Planning particles spread from about −13° to 17° along track but stay within about ±0.5° cross track." width="1600" height="871" loading="lazy" decoding="async">
+          </a>
+          <figcaption>Angular uncertainty for a simulated contact. Dots show planning particles; axis scales differ.</figcaption>
+        </figure>
+        <p class="section-intro">Lastly, a Bayesian greedy strategy instead uses the updated orbital belief after a given position is considered a miss and points the antenna toward the feasible location with the highest immediate probability of acquisition. This makes the search adaptive, but considers only the next pointing and does not account for how that decision affects later search opportunities.</p>
+        <h3 class="subsection-title">Bayesian Continuation MPC</h3>
+        <p class="section-intro">Looking beyond a single pointing leads naturally to model predictive control (MPC). Rather than selecting only the next action, MPC optimizes a sequence of <var>H</var> upcoming antenna pointings using the current orbital belief. Only the first pointing is executed before the optimization is repeated.</p>
+        <p class="section-intro">A short planning horizon may cover only part of the remaining contact window, leaving later search opportunities outside the current optimization. BC-MPC addresses this limitation by retaining an ATUS continuation beyond the MPC horizon. Starting from an ATUS schedule, BC-MPC reoptimizes the next <var>H</var> antenna pointings while keeping the remainder of the sweep unchanged. The revised pointings are therefore evaluated together with the retained continuation over the full remaining contact window. This construction is closely related to rollout methods in approximate dynamic programming and MPC with terminal costs and policies, which account for downstream performance beyond the optimized horizon. In BC-MPC, the retained, motion-feasible search schedule provides this continuation, evaluated under the current Bayesian belief.</p>
+        <p class="section-intro">Suppose <var>K</var> search stages remain, with 1 ≤ <var>H</var> ≤ <var>K</var>. For each candidate prefix of <var>H</var> pointings, a complete schedule is formed by retaining the fixed continuation. BC-MPC optimizes only the prefix, but evaluates the probability of missing the spacecraft over all <var>K</var> remaining stages. The complete schedule must satisfy the antenna motion constraints, including the transition from the optimized prefix to the retained continuation. Only the first action is executed. If the spacecraft is acquired, the search terminates. After a miss, the particle weights are updated using Bayes’ rule, the optimized schedule is shifted by one stage and retained as the next continuation, and the optimization is repeated using the updated belief.</p>
+      </div>
+    </section>
+
+    <section class="evaluation-section section" id="evaluation" aria-labelledby="evaluation-title">
+      <div class="reading-width">
+        <h2 id="evaluation-title">Evaluation</h2>
+        <p class="section-intro">To evaluate BC-MPC, we focus on two main areas. First, we study the controller’s effect on single-spacecraft acquisition, including sensitivity to antenna performance, orbital uncertainty, and receiver behavior. Second, we evaluate how contact-level search improvements translate to fleet acquisition across repeated contact opportunities. Finally, we evaluate BC-MPC through an operational-data replay using operational orbit data from 83 spacecraft from the Transporter-16 rideshare launch provided by Kayhan Space.</p>
+        <p class="section-intro">Performance is evaluated using acquisition probability and restricted mean acquisition time (RMST). Acquisition probability is the probability that confirmation occurs within the allocated search window. Acquisition time is capped before averaging: successful searches contribute their time to confirmation, and searches without confirmation within the window contribute the full duration.</p>
+      </div>
+      <figure class="paper-figure content-width">
+        <a href="assets/figures/ground-network.webp" target="_blank" rel="noopener noreferrer" aria-label="Open the ground network figure at full resolution">
+          <img src="assets/figures/ground-network.webp" alt="Two globes showing a representative ground track and six illustrative ground stations: Fairbanks, Hawaii, and Punta Arenas in the Americas and Pacific; Svalbard, Hartebeesthoek, and Perth in Europe, Africa, and Asia." width="2000" height="1015" loading="lazy" decoding="async">
+        </a>
+        <figcaption>Illustrative six-station ground network and an example spacecraft orbit used in the evaluation.</figcaption>
+      </figure>
+      <div class="reading-width">
+        <p class="section-intro">The primary evaluation uses six illustrative ground stations: Svalbard, Fairbanks, Hawaii, Hartebeesthoek, and Punta Arenas from KSAT’s network, plus Perth, Australia. We use approximate coordinates and one independently steerable antenna per station. Orbits are propagated with Brahe astrodynamics library and SGP4. For the primary evaluation and Transporter-16 replay, equally weighted particles are initialized by independent Gaussian perturbations about the nominal orbit, with assumed standard deviations of 20 s in orbital phase, 0.025° in inclination, 0.035° in right ascension of the ascending node, and 2.5 × 10<sup>−4</sup> revolutions per day in mean motion.</p>
+        <div class="table-scroll" role="region" aria-label="Simulation parameters" tabindex="0">
+          <table class="validation-table parameter-table">
+            <caption>Parameters used for simulation</caption>
+            <thead><tr><th scope="col">Parameter</th><th scope="col">Setting</th></tr></thead>
+            <tbody>
+              <tr><th scope="row">Search window</th><td>192 s</td></tr>
+              <tr><th scope="row">Move / settle / listen per stage</th><td>4.0 s / 0.5 s / 1.5 s</td></tr>
+              <tr><th scope="row">Planning / evaluation particles</th><td>160 / 640</td></tr>
+              <tr><th scope="row">Candidate pointings / extent</th><td>17 / ±2.8 along-track SD</td></tr>
+              <tr><th scope="row">MPC horizon / beam width</th><td>4 stages / 40</td></tr>
+              <tr><th scope="row">Antenna rate / acceleration</th><td>1.10°/s / 1.00°/s²</td></tr>
+              <tr><th scope="row">Beam FWHM / elevation mask</th><td>2° / 10°</td></tr>
+            </tbody>
+          </table>
+        </div>
       </div>
     </section>
 
@@ -116,71 +156,121 @@
         </div>
         <section class="results-panel" id="single-spacecraft" aria-labelledby="single-spacecraft-title">
           <h3 id="single-spacecraft-title">Single-spacecraft search</h3>
-          <p class="section-intro">We evaluate first-contact acquisition across 2,773 attempts from 96 simulated deployment realizations near an orbit with an altitude of 550 km and an inclination of 97.6°. BC-MPC is initialized from an ATUS schedule with a planning horizon of four dwells and compared against a uniform grid sweep, ATUS, Bayesian greedy, and MPC without continuation. All controllers use a common 192-second search window, matched orbital uncertainty, and antenna motion constraints.</p>
-          <figure class="paper-figure results-figure">
-            <a href="assets/figures/deployment-results.png" target="_blank" rel="noopener noreferrer" aria-label="Open the acquisition results figure at full resolution">
-              <img src="assets/figures/deployment-results.png" alt="Acquisition probability over 192 seconds: BC-MPC reaches 90.2%, ATUS 83.3%, Bayesian greedy 68.8%, and uniform grid 32.9%." width="1600" height="1365" loading="lazy" decoding="async">
-            </a>
-            <figcaption>First-contact acquisition probability over elapsed search time. Bayesian greedy achieves higher acquisition probability early in the search, while BC-MPC achieves the highest acquisition probability over the full 192-second contact window.</figcaption>
-          </figure>
+          <p class="section-intro">We evaluate first-contact acquisition across 2,773 attempts from 96 realizations of a spacecraft deployment near an orbit with an altitude of 550 km and an inclination of 97.6°, with spacecraft elements varied across deployments to produce different acquisition geometries. BC-MPC is initialized from an ATUS schedule with a planning horizon of <var>H</var> = 4 dwells and compared against a uniform grid sweep, ATUS, a Bayesian greedy controller, and an MPC without its continuation term.</p>
           <div class="table-scroll" role="region" aria-label="Simulated acquisition results" tabindex="0">
             <table class="validation-table results-table">
-              <caption>First-contact acquisition probability and restricted mean acquisition time</caption>
-              <thead><tr><th scope="col">Controller</th><th scope="col">Acquired by 60 s (%)</th><th scope="col">Acquired by 192 s (%)</th><th scope="col">RMST (s)</th></tr></thead>
+              <caption>First-contact acquisition probability and mean acquisition time</caption>
+              <thead><tr><th scope="col">Controller</th><th scope="col"><var>P</var><sub>60</sub></th><th scope="col"><var>P</var><sub>192</sub></th><th scope="col">RMST (s)</th></tr></thead>
               <tbody>
-                <tr><th scope="row">Uniform grid</th><td>24.8</td><td>32.9</td><td>141.9</td></tr>
-                <tr><th scope="row">ATUS</th><td>37.6</td><td>83.3</td><td>89.8</td></tr>
-                <tr><th scope="row">Bayesian greedy</th><td>56.5</td><td>68.8</td><td>86.5</td></tr>
-                <tr><th scope="row">MPC, no continuation</th><td>61.4</td><td>79.0</td><td>74.5</td></tr>
-                <tr class="proposed-policy"><th scope="row">BC-MPC</th><td>42.3</td><td>90.2</td><td>78.3</td></tr>
+                <tr><th scope="row">Uniform grid</th><td>0.248</td><td>0.329</td><td>141.9</td></tr>
+                <tr><th scope="row">ATUS</th><td>0.376</td><td>0.833</td><td>89.8</td></tr>
+                <tr><th scope="row">Bayesian greedy</th><td>0.565</td><td>0.688</td><td>86.5</td></tr>
+                <tr><th scope="row">MPC, no continuation</th><td>0.614</td><td>0.790</td><td>74.5</td></tr>
+                <tr class="proposed-policy"><th scope="row">BC-MPC</th><td>0.423</td><td>0.902</td><td>78.3</td></tr>
               </tbody>
             </table>
           </div>
-          <p class="source-note">Probabilities are conditional on receiving a reserved contact. Restricted mean acquisition time (RMST) is capped at 192 seconds, with unsuccessful attempts contributing the full duration. The antenna rate and acceleration limits are 1.10 deg/s and 1.00 deg/s².</p>
+          <p class="source-note"><var>P</var><sub>60</sub> and <var>P</var><sub>192</sub> are acquisition probabilities by 60 s and 192 s of elapsed search time.</p>
+          <p class="section-intro">Over the full contact window of 192 s, BC-MPC achieves the highest acquisition probability of 0.902, compared with 0.833 for ATUS, corresponding to an improvement of 6.9 percentage points (95% confidence interval 6.7–7.0). BC-MPC also reduces RMST from 89.8 s for ATUS to 78.3 s, a reduction of 11.5 s (95% interval 11.4–11.7).</p>
+          <p class="section-intro">An interesting finding is that strategies with higher acquisition probability early in the search can have lower acquisition probability over the full contact window. By 60 s of elapsed search time, Bayesian greedy and MPC without continuation both achieve higher cumulative acquisition probabilities than BC-MPC. However, by the end of the 192 s search window, BC-MPC achieves the highest acquisition probability among the displayed controllers. This tradeoff highlights the value of retaining effective search opportunities for later in the contact when early pointings do not yield a detection.</p>
+          <figure class="paper-figure results-figure">
+            <a href="assets/figures/deployment-results.png" target="_blank" rel="noopener noreferrer" aria-label="Open the acquisition results figure at full resolution">
+              <img src="assets/figures/deployment-results.png" alt="Acquisition probability over 192 seconds: Bayesian greedy leads early, while BC-MPC finishes highest at 0.902, ahead of ATUS at 0.833, Bayesian greedy at 0.688, and uniform grid at 0.329." width="1600" height="1365" loading="lazy" decoding="async">
+            </a>
+            <figcaption>First-contact acquisition probability over elapsed search time.</figcaption>
+          </figure>
+
+          <h4 class="results-subtitle">Repeated contacts</h4>
+          <p class="section-intro">If the search is unsuccessful over an entire contact window, the unsuccessful observations provide useful information about the spacecraft trajectory. Subsequent contacts therefore begin with a more informed belief, allowing adaptive search decisions to better exploit the remaining uncertainty. We evaluate how this accumulated information affects acquisition over repeated contact opportunities across 16 spacecraft scenarios by comparing cumulative acquisition for BC-MPC and ATUS. BC-MPC acquires more spacecraft during the earliest contacts, while the difference narrows as additional opportunities become available.</p>
+          <figure class="paper-figure results-figure narrow-figure">
+            <a href="assets/figures/contact-history.png" target="_blank" rel="noopener noreferrer" aria-label="Open the repeated contacts figure at full resolution">
+              <img src="assets/figures/contact-history.png" alt="Cumulative acquisition over five contact attempts: after the first contact BC-MPC reaches 92.5% and ATUS 86.6%; both exceed 99% by the third contact." width="1600" height="1342" loading="lazy" decoding="async">
+            </a>
+            <figcaption>Cumulative acquisition across repeated contact attempts for BC-MPC and ATUS.</figcaption>
+          </figure>
+
+          <h4 class="results-subtitle">Slower and delayed receiver responses</h4>
+          <p class="section-intro">We next evaluate how slower or delayed satellite responses affect acquisition performance, as might occur when spacecraft tumbling affects antenna gain. First, we increase the time required for acquisition confirmation while keeping the controller search plans unchanged. RMST increases for both BC-MPC and ATUS as confirmation becomes slower, while BC-MPC consistently maintains a lower RMST than ATUS across the tested confirmation-time multipliers.</p>
+          <p class="section-intro">The timing advantage also persists when signal availability is delayed, and not available until some time into the contact window, as might occur with a miscalibrated horizon mask or a software configuration issue. As the mean delay increases, RMST increases for both controllers, while the advantage of BC-MPC over ATUS gradually narrows as signal availability increasingly limits acquisition. For a positive mean delay, every target starts unavailable and becomes available after an exponentially distributed wait. Even at a 100 s mean signal-availability delay, BC-MPC retains an average RMST saving of 5.1 s.</p>
+          <div class="figure-pair">
+            <figure class="paper-figure results-figure">
+              <a href="assets/figures/receiver-confirmation.png" target="_blank" rel="noopener noreferrer" aria-label="Open the slower confirmation figure at full resolution">
+                <img src="assets/figures/receiver-confirmation.png" alt="RMST against confirmation-time multipliers of 1 to 8: BC-MPC stays below ATUS throughout, both rising toward about 155 seconds." width="1600" height="1365" loading="lazy" decoding="async">
+              </a>
+              <figcaption>RMST with slower receiver confirmation. Bands show pointwise 95% confidence intervals.</figcaption>
+            </figure>
+            <figure class="paper-figure results-figure">
+              <a href="assets/figures/receiver-delay.png" target="_blank" rel="noopener noreferrer" aria-label="Open the delayed signal figure at full resolution">
+                <img src="assets/figures/receiver-delay.png" alt="RMST against mean signal-availability delay from 0 to 100 seconds: BC-MPC stays below ATUS, with the gap narrowing as delay grows." width="1600" height="1365" loading="lazy" decoding="async">
+              </a>
+              <figcaption>RMST with delayed signal availability. Bands show pointwise 95% confidence intervals.</figcaption>
+            </figure>
+          </div>
+
+          <h4 class="results-subtitle">Antenna motion and planning horizon</h4>
+          <p class="section-intro">Finally, we examine how antenna motion and MPC planning horizon affect acquisition performance. We first vary antenna agility in a supporting study, comparing ATUS, Bayesian greedy, and BC-MPC under constrained and agile antenna dynamics across eight scenarios.</p>
+          <div class="table-scroll" role="region" aria-label="Acquisition under antenna agility" tabindex="0">
+            <table class="validation-table results-table">
+              <caption>Acquisition by 192 s (%). Entries are means with 95% normal intervals.</caption>
+              <thead><tr><th scope="col">Controller</th><th scope="col">Slower antenna (1.1°/s)</th><th scope="col">Agile antenna (8°/s)</th></tr></thead>
+              <tbody>
+                <tr><th scope="row">ATUS</th><td>76.1 [73.2, 79.0]</td><td>82.7 [80.3, 85.2]</td></tr>
+                <tr><th scope="row">Bayesian greedy</th><td>66.2 [63.5, 68.9]</td><td>97.4 [97.0, 97.8]</td></tr>
+                <tr class="proposed-policy"><th scope="row">BC-MPC</th><td>90.9 [88.6, 93.1]</td><td>97.9 [97.5, 98.2]</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="section-intro">BC-MPC provides a substantially larger advantage over Bayesian greedy when antenna motion is constrained to 1.1°/s. With an agile antenna (8°/s maximum speed), however, Bayesian greedy approaches the performance of BC-MPC. In this regime, rapid antenna motion keeps most future pointings reachable, so an immediate acquisition decision is less likely to restrict later search opportunities.</p>
+          <p class="section-intro">We further investigate the effect of greedy versus model predictive control by varying the MPC lookahead horizon. With constrained antenna dynamics, increasing the number of lookahead dwells substantially improves terminal acquisition relative to greedy search. With an agile antenna, performance changes little as the horizon increases, confirming the behavior observed in the table above.</p>
+          <figure class="paper-figure results-figure narrow-figure">
+            <a href="assets/figures/mechanism-horizon.png" target="_blank" rel="noopener noreferrer" aria-label="Open the planning horizon figure at full resolution">
+              <img src="assets/figures/mechanism-horizon.png" alt="Acquisition by 192 seconds against lookahead: with the slower antenna it rises from about 66% for greedy to about 94% for six-dwell MPC; with the agile antenna it stays near 97% throughout." width="1600" height="1365" loading="lazy" decoding="async">
+            </a>
+            <figcaption>Acquisition by 192 s versus MPC horizon, without continuation. Whiskers show exploratory 95% normal intervals.</figcaption>
+          </figure>
         </section>
         <section class="results-panel" id="fleet" aria-labelledby="fleet-title">
           <h3 id="fleet-title">Fleet acquisition after launch</h3>
-          <p class="section-intro">We investigate whether contact-level improvements translate to improved fleet-scale acquisition. Four simulated deployments each release 100 spacecraft, creating competing acquisition demands across a limited ground-station network. We measure the expected fraction acquired within the first 24 hours as the network expands from one to 24 sites, with four independently steerable antennas per site.</p>
+          <p class="section-intro">We next investigate whether contact-level improvements translate to improved fleet-scale acquisition. Such deployments release many spacecraft within a short period, creating competing acquisition demands across a limited ground-station network. We consider a fleet of 100 spacecraft all deployed from the same launch and measure the fraction acquired within the first 24 hours after deployment. We vary the number of available ground-station sites to evaluate how BC-MPC and ATUS perform as the number of acquisition opportunities increases.</p>
           <figure class="paper-figure results-figure">
             <a href="assets/figures/fleet-network.png" target="_blank" rel="noopener noreferrer" aria-label="Open the fleet acquisition figure at full resolution">
               <img src="assets/figures/fleet-network.png" alt="Expected fleet fraction acquired within 24 hours as the network grows from one to 24 sites, each with four antennas. At six sites, BC-MPC reaches 94.2% and ATUS reaches 89.5%." width="1600" height="1600" loading="lazy" decoding="async">
             </a>
-            <figcaption>Expected fraction of the fleet acquired within 24 hours; whiskers show the minimum and maximum across four deployments. Every spacecraft is included in the denominator, including those without a reserved contact.</figcaption>
+            <figcaption>Fleet acquisition as the ground-station network expands to 24 sites. Whiskers show deployment ranges.</figcaption>
           </figure>
-          <p class="section-intro">With six sites, the expected fraction acquired within 24 hours increases from 89.5% with ATUS to 94.2% with BC-MPC. The advantage is largest when ground-station opportunities are limited, where a missed acquisition is more difficult to recover from. As the network expands, additional contact opportunities reduce the impact of individual misses and the performance gap narrows. Both controllers approach 99% acquisition for the largest tested network.</p>
-          <p class="source-note">These four deployments are separate from the single-spacecraft study. Sites are added in a fixed geographic order. The result is an expected acquired fraction, not the probability of acquiring every spacecraft.</p>
+          <p class="section-intro">BC-MPC improves fleet-scale acquisition across the tested ground-station networks. With six sites, the expected fraction of spacecraft acquired within 24 hours increases from 89.5% with ATUS to 94.2% with BC-MPC. The advantage is largest when ground-station opportunities are limited, where a missed acquisition is more difficult to recover from. As the network expands, additional contact opportunities reduce the impact of individual misses, and the performance gap narrows, with both controllers approaching 99% acquisition for the largest tested networks.</p>
         </section>
       </div>
     </section>
 
     <section class="validation-section section" id="validation" aria-labelledby="validation-title">
       <div class="reading-width">
-        <h2 id="validation-title">Transporter-16 replay</h2>
-        <p class="section-intro">We evaluate BC-MPC using operational orbit data for 83 spacecraft from the Transporter-16 rideshare launch, supplied by Kayhan Space. The dataset contains pre-deployment ephemeris distributed to operators three days before launch, post-deployment ephemeris, and the first cataloged two-line element set (TLE) correlated to each deployment. The pre- and post-deployment ephemeris represent the orbit products used operationally to cue early ground contacts. The first-catalog TLE is used only retrospectively as an approximate trajectory reference and is unavailable to the controllers.</p>
-        <p class="section-intro">We evaluate two planning cases, using either pre- or post-deployment ephemeris as controller input, with the same six ground stations and search configuration used in the single-spacecraft evaluation. Both cases yield similar results: BC-MPC improves modeled acquisition over ATUS by approximately 12 percentage points while also reducing restricted mean acquisition time (RMST). The improvement observed in the synthetic evaluation is retained when using operational orbit products.</p>
-        <div class="table-scroll" role="region" aria-label="Pre-deployment ephemeris replay results" tabindex="0">
+        <h2 id="validation-title">Kayhan Space LEOP replay</h2>
+        <p class="section-intro">Finally, we evaluate BC-MPC using operational orbit data supplied by Kayhan Space for 83 objects from the Transporter-16 rideshare launch on March 30, 2026. The dataset contains pre-deployment ephemeris distributed to operators three days before launch, post-deployment ephemeris, and the first cataloged TLE correlated to each deployment. The pre- and post-deployment ephemeris represent the same orbit products used operationally to cue early ground contacts, while the first-catalog TLE is used only retrospectively as an approximate trajectory reference. We evaluate two planning cases, using either the pre- or post-deployment ephemeris as the controller input and retain the same six ground stations and search configuration used in the previous evaluation.</p>
+        <div class="table-scroll" role="region" aria-label="Transporter-16 replay results" tabindex="0">
           <table class="validation-table">
-            <caption>Planning input: pre-deployment ephemeris</caption>
-            <thead><tr><th scope="col">Controller</th><th scope="col">Modeled acquisition (%)</th><th scope="col">RMST (s)</th></tr></thead>
+            <caption>Modeled single-pass acquisition and RMST using deployment ephemeris from the Transporter-16 replay</caption>
+            <thead><tr><th scope="col">Controller</th><th scope="col">Acquisition (%)</th><th scope="col">RMST (s)</th></tr></thead>
             <tbody>
+              <tr class="table-group"><th scope="rowgroup" colspan="3">Planning input: pre-deployment ephemeris</th></tr>
               <tr><th scope="row">Nominal tracking</th><td>4.96</td><td>184.24</td></tr>
               <tr><th scope="row">ATUS</th><td>69.51</td><td>144.05</td></tr>
               <tr class="proposed-policy"><th scope="row">BC-MPC</th><td>81.55</td><td>139.10</td></tr>
-            </tbody>
-          </table>
-        </div>
-        <div class="table-scroll" role="region" aria-label="Post-deployment ephemeris replay results" tabindex="0">
-          <table class="validation-table">
-            <caption>Planning input: post-deployment ephemeris</caption>
-            <thead><tr><th scope="col">Controller</th><th scope="col">Modeled acquisition (%)</th><th scope="col">RMST (s)</th></tr></thead>
-            <tbody>
+              <tr class="table-group"><th scope="rowgroup" colspan="3">Planning input: post-deployment ephemeris</th></tr>
               <tr><th scope="row">Nominal tracking</th><td>6.03</td><td>182.67</td></tr>
               <tr><th scope="row">ATUS</th><td>68.78</td><td>144.42</td></tr>
               <tr class="proposed-policy"><th scope="row">BC-MPC</th><td>81.24</td><td>139.16</td></tr>
             </tbody>
           </table>
         </div>
-        <p class="source-note">Modeled acquisition and RMST use a common assumed uncertainty model with a 20-second phase standard deviation and an approximate first-catalog trajectory reference. Successful searches contribute their time to confirmation; searches without confirmation contribute the full 192-second window.</p>
+        <p class="section-intro">The pre- and post-deployment planning cases yield very similar results, with BC-MPC improving modeled acquisition over ATUS by approximately 12 percentage points in both cases while also reducing RMST. This mirrors the trend observed in the synthetic evaluation and shows that the improvement persists when using operational orbit products.</p>
+      </div>
+    </section>
+
+    <section class="conclusion-section section" id="conclusion" aria-labelledby="conclusion-title">
+      <div class="reading-width">
+        <h2 id="conclusion-title">Conclusion</h2>
+        <p class="section-intro">This paper studies spacecraft acquisition under orbital uncertainty, where missed detections provide information about the spacecraft location while antenna motion constrains which search actions remain reachable. We introduced Bayesian Continuation Model Predictive Control (BC-MPC), which adapts antenna pointings after missed detections. Across 96 simulated deployments, BC-MPC increased acquisition probability from 83.3% to 90.2% and reduced RMST from 89.8 s to 78.3 s relative to ATUS. Repeated-contact and fleet experiments show that these contact-level improvements translate into earlier fleet acquisition, with the advantage narrowing as additional ground-station opportunities become available. In a replay using real pre- and post-deployment ephemeris provided by Kayhan Space for 83 spacecraft from Transporter-16, BC-MPC improved modeled acquisition over ATUS by 12.0 and 12.4 percentage points, respectively, under the commonly assumed uncertainty model, while also reducing RMST. Together, these results show how Bayesian belief updates and future antenna reachability can be combined to improve early-orbit spacecraft acquisition while retaining the structure of an operational sweep. Future work could validate the approach using GNSS measurements from the vehicle from the time of deployment for greater accuracy, and extend the controller to variable listening times, richer receiver feedback including partial signal strength, and reassignment of reservations after early acquisition.</p>
       </div>
     </section>
 
@@ -207,9 +297,8 @@
           </button>
         </div>
         <p class="citation-note">Research manuscript</p>
-        <pre class="citation-code" tabindex="0" aria-label="BibTeX citation"><code id="bibtex">@unpublished{schreiber2026bayesiancontinuation,
-  title  = {Bayesian Continuation {MPC} for Spacecraft Acquisition
-            Under Orbital Uncertainty},
+        <pre class="citation-code" tabindex="0" aria-label="BibTeX citation"><code id="bibtex">@unpublished{schreiber2026optimalsearch,
+  title  = {Optimal Search for Finding Satellites Post-Launch},
   author = {Schreiber, Carlo and Eddy, Duncan and
             Al-Husseini, Mahdi and Woods, Derek and
             Feyzi, Araz and Kochenderfer, Mykel J.},
