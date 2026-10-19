@@ -92,6 +92,10 @@ const resourceNav = [...html.matchAll(/<nav\b[^>]*>[\s\S]*?<\/nav>/gi)]
 assert(resourceNav, 'Resource navigation must link to the LEOPT repository.');
 assert(/bibtex/i.test(resourceNav[0]) && /href=["']#citation["']/.test(resourceNav[0]),
   'Resource navigation must link to the BibTeX citation.');
+assert(/<a\b[^>]*href=["']https:\/\/arxiv\.org\/abs\/2610\.07300["']/.test(resourceNav[0]),
+  'Resource navigation must link to the arXiv listing.');
+assert(/eprint\s*=\s*\{2610\.07300\}/.test(html.match(/<code id="bibtex">[\s\S]*?<\/code>/)?.[0] ?? ''),
+  'The BibTeX entry must cite the arXiv listing.');
 
 const headline = [...html.matchAll(/<figure\b([^>]*)>[\s\S]*?<\/figure>/gi)]
   .find(match => attributes(match[1]).id === 'demo');
